@@ -8,17 +8,11 @@ namespace SharpQuill
 {
   public class Vertex
   {
-    public float u1;
-    public float u2;
-    public float u3;
-    public float u4;
-    public float u5;
-    public float u6;
-    public float u7;
-    public float u8;
-    public float u9;
+    public Vector3f Position;
+    public Vector3f Normal;
+    public Vector3f Tangeant;
     public Color Color;
-    public float u10;
-    public float u11;
+    public float Opacity;
+    public float Width;
   }
 }

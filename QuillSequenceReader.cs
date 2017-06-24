@@ -35,9 +35,10 @@ namespace SharpQuill
       string paintDataFilename = Path.Combine(path, "Quill.qbin");
       if (!File.Exists(paintDataFilename))
         throw new InvalidOperationException();
-
+        
       Stream stream = File.OpenRead(paintDataFilename);
       QBinReader qbinReader = new QBinReader(stream);
+      sequence.LastStrokeId = qbinReader.ReadLastStrokeId();
       ReadPaintLayerData(sequence.RootLayer, qbinReader);
       qbinReader.Close();
 

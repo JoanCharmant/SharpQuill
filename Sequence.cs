@@ -12,6 +12,7 @@ namespace SharpQuill
       public Matrix4f HomePosition;
       public int TrackingOrigin; // Unsure of type.
       public Layer RootLayer;
+      public UInt32 LastStrokeId;
 
       public Sequence()
       {

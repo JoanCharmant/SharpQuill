@@ -8,12 +8,13 @@ namespace SharpQuill
 {
   public class Stroke
   {
-    public int u1;
+    public UInt32 Id; // Not too sure of this one, there are issues with some large values in some files.
     public int u2;
     public BoundingBox BoundingBox;
-    public short u3;
-    public short u4;
-    public int CountVertices; // Index of the vertex at the start of the next stroke.
+    public BrushType BrushType;
+    public bool DisableRotationalOpacity;
+    public byte u3;
+    public int CountVertices;
     public List<Vertex> Vertices = new List<Vertex>();
   }
 }

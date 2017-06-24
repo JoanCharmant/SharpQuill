@@ -45,6 +45,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BoundingBox.cs" />
+    <Compile Include="BrushType.cs" />
     <Compile Include="Color.cs" />
     <Compile Include="Layer.cs" />
     <Compile Include="LayerImplementation.cs" />

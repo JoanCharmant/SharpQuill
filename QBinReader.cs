@@ -14,12 +14,18 @@ namespace SharpQuill
 		{
     }
 
+    public UInt32 ReadLastStrokeId()
+    {
+      UInt32 strokeId = ReadUInt32();
+      return strokeId;
+    }
+
     public PaintLayerData ReadPaintLayer()
     {
       PaintLayerData pl = new PaintLayerData();
 
       int count = ReadInt32();
-      List<Stroke> strokes = ReadStrokes(count);
+      pl.Strokes = ReadStrokes(count);
       
       return pl;
     }
@@ -40,11 +46,13 @@ namespace SharpQuill
     {
       Stroke stroke = new Stroke();
 
-      stroke.u1 = ReadInt32();
+      stroke.Id = ReadUInt32();
+      
       stroke.u2 = ReadInt32();
       stroke.BoundingBox = ReadBoundingBox();
-      stroke.u3 = ReadInt16();
-      stroke.u4 = ReadInt16();
+      stroke.BrushType = (BrushType)ReadInt16();
+      stroke.DisableRotationalOpacity = ReadBoolean();
+      stroke.u3 = ReadByte();
       stroke.CountVertices = ReadInt32();
       for (int i = 0; i < stroke.CountVertices; i++)
         stroke.Vertices.Add(ReadVertex());
@@ -70,18 +78,12 @@ namespace SharpQuill
     {
       Vertex v = new Vertex();
 
-      v.u1 = ReadSingle();
-      v.u2 = ReadSingle();
-      v.u3 = ReadSingle();
-      v.u4 = ReadSingle();
-      v.u5 = ReadSingle();
-      v.u6 = ReadSingle();
-      v.u7 = ReadSingle();
-      v.u8 = ReadSingle();
-      v.u9 = ReadSingle();
+      v.Position = ReadVector3();
+      v.Normal = ReadVector3();
+      v.Tangeant = ReadVector3();
       v.Color = ReadColor();
-      v.u10 = ReadSingle();
-      v.u11 = ReadSingle();
+      v.Opacity = ReadSingle();
+      v.Width = ReadSingle();
       
       return v;
     }
@@ -95,6 +97,17 @@ namespace SharpQuill
       c.B = ReadSingle();
 
       return c;
+    }
+
+    private Vector3f ReadVector3()
+    {
+      Vector3f v = new Vector3f();
+
+      v.X = ReadSingle();
+      v.Y = ReadSingle();
+      v.Z = ReadSingle();
+
+      return v;
     }
   }
 }
