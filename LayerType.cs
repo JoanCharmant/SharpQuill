@@ -11,6 +11,7 @@ namespace SharpQuill
     Group,
     Paint,
     Sound,
-    Picture
+    Picture,
+    Unknown
   }
 }

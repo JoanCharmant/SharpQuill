@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SharpQuill
 {
-  public struct Layer
+  public class Layer
   {
     public string Name;
     public bool Visible;
@@ -18,5 +18,10 @@ namespace SharpQuill
     public Matrix4f Transform;
     public double AnimOffset;
     public LayerImplementation Implementation;
+
+    public Layer()
+    {
+
+    }
   }
 }

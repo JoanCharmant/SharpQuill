@@ -6,7 +6,15 @@ using System.Threading.Tasks;
 
 namespace SharpQuill
 {
-  public class Matrix4f
+  public struct Matrix4f
   {
+    public Matrix4f(List<float> value)
+    {
+      // TODO: Import values.
+
+      
+    }
+
+    
   }
 }

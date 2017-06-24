@@ -8,6 +8,7 @@ namespace SharpQuill
 {
   public enum PictureMode
   {
-    Picture
+    Picture,
+    Unknown
   }
 }

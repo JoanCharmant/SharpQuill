@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SharpQuill
 {
-  public class LayerImplementationSound
+  public class LayerImplementationSound : LayerImplementation
   {
     public float Duration;
     public bool Loop;
