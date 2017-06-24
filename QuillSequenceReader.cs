@@ -12,6 +12,7 @@ namespace SharpQuill
 {
   public static class QuillSequenceReader
   {
+  
     public static Sequence Read(string path)
     {
       if (string.IsNullOrEmpty(path))
@@ -28,7 +29,19 @@ namespace SharpQuill
       dynamic document = JsonConvert.DeserializeObject(json);
 
       int version = document.Version;
-      return Parse(document.Sequence);
+      Sequence sequence = Parse(document.Sequence);
+
+      // Read all the paint data.
+      string paintDataFilename = Path.Combine(path, "Quill.qbin");
+      if (!File.Exists(paintDataFilename))
+        throw new InvalidOperationException();
+
+      Stream stream = File.OpenRead(paintDataFilename);
+      QBinReader qbinReader = new QBinReader(stream);
+      ReadPaintLayerData(sequence.RootLayer, qbinReader);
+      qbinReader.Close();
+
+      return sequence;
     }
 
     private static Sequence Parse(dynamic s)
@@ -147,6 +160,22 @@ namespace SharpQuill
       }
 
       return result;
+    }
+
+    private static void ReadPaintLayerData(Layer layer, QBinReader qbinReader)
+    {
+      // Recursive function reading paint data for the entire hierarchy.
+      if (layer.Type == LayerType.Group)
+      {
+        foreach (Layer l in ((LayerImplementationGroup)layer.Implementation).Children)
+          ReadPaintLayerData(l, qbinReader);
+      }
+      else if (layer.Type == LayerType.Paint)
+      {
+        LayerImplementationPaint lip = layer.Implementation as LayerImplementationPaint;
+        qbinReader.BaseStream.Seek(lip.DataFileOffset, SeekOrigin.Begin);
+        lip.Data = qbinReader.ReadPaintLayer();
+      }
     }
   }
 }

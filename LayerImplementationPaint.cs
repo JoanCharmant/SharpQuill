@@ -12,5 +12,6 @@ namespace SharpQuill
     public float AnimSpeed;
     public int PlaybackReduce; // Type unsure. (1).
     public long DataFileOffset;
+    public PaintLayerData Data;
   }
 }
