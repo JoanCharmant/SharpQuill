@@ -59,6 +59,7 @@
     <Compile Include="PictureMode.cs" />
     <Compile Include="QBinReader.cs" />
     <Compile Include="QuillSequenceReader.cs" />
+    <Compile Include="QuillSequenceWriter.cs" />
     <Compile Include="Sequence.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Stroke.cs" />

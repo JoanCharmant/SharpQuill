@@ -8,13 +8,12 @@ namespace SharpQuill
 {
   public struct Matrix4f
   {
+    // TODO: proper matrix class, or just simple data.
+    public List<float> data;
+
     public Matrix4f(List<float> value)
     {
-      // TODO: Import values.
-
-      
+      data = new List<float>(value);
     }
-
-    
   }
 }

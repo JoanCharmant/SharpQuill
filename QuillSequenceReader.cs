@@ -33,9 +33,7 @@ namespace SharpQuill
 
       string json = File.ReadAllText(sequenceFilename);
       dynamic document = JsonConvert.DeserializeObject(json);
-
-      int version = document.Version;
-      Sequence seq = Parse(document.Sequence);
+      Sequence seq = Parse(document);
 
       // Read all the paint data.
       Stream stream = File.OpenRead(paintDataFilename);
@@ -53,10 +51,10 @@ namespace SharpQuill
     private static Sequence Parse(dynamic s)
     {
       Sequence seq = new Sequence();
-      seq.BackgroundColor = ParseColor(s.BackgroundColor);
-      seq.HomePosition = ParseMatrix4(s.HomePosition);
-      seq.TrackingOrigin = s.TrackingOrigin;
-      seq.RootLayer = ParseLayer(s.RootLayer);
+      seq.BackgroundColor = ParseColor(s.Sequence.BackgroundColor);
+      seq.HomePosition = ParseMatrix4(s.Sequence.HomePosition);
+      seq.TrackingOrigin = s.Sequence.TrackingOrigin;
+      seq.RootLayer = ParseLayer(s.Sequence.RootLayer);
       return seq;
     }
 
