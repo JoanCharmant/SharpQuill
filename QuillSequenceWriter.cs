@@ -21,6 +21,7 @@ namespace SharpQuill
 
       string sequenceFilename = Path.Combine(path, "Quill.json");
       string paintDataFilename = Path.Combine(path, "Quill.qbin");
+      string stateFilename = Path.Combine(path, "State.json");
 
       // Write the qbin file first to update the layers offsets.
       FileStream qbinStream = File.Create(paintDataFilename);
@@ -30,6 +31,7 @@ namespace SharpQuill
       qbinStream.Close();
 
       WriteManifest(seq, sequenceFilename);
+      WriteState(stateFilename);
     }
 
     private static void WriteManifest(Sequence seq, string path)
@@ -182,6 +184,48 @@ namespace SharpQuill
         lip.DataFileOffset = qbinWriter.BaseStream.Position;
         qbinWriter.Write(lip.Data);
       }
+    }
+
+    private static void WriteState(string path)
+    {
+      // We write the state just to be able to read the file in Quill.
+      // Use a dummy structure with all default values.
+      // Unlike quill default new document, we explicitely not start with any paint layer in move or paint mode.
+      
+      JObject root = new JObject();
+      
+      JObject jQuill = new JObject();
+      jQuill.Add(new JProperty("ShowGrid", false));
+      jQuill.Add(new JProperty("MoveLayer", ""));
+      jQuill.Add(new JProperty("PaintLayer", ""));
+      jQuill.Add(new JProperty("DirectManipulation", false));
+      jQuill.Add(new JProperty("ToolID", 0));
+
+      JObject jTool = new JObject();
+      jTool.Add(new JProperty("BrushID", 3));
+      jTool.Add(new JProperty("Color", new List<float>() { 0, 0, 0 }));
+      jTool.Add(new JProperty("Opacity", 1.0f));
+      jTool.Add(new JProperty("Size", 0.01f));
+      jTool.Add(new JProperty("TransparentTaper", true));
+      jTool.Add(new JProperty("WidthTaper", true));
+      jTool.Add(new JProperty("DirectionalStroke", false));
+      jQuill.Add(new JProperty("Tool", jTool));
+
+      JArray jColorPalette = new JArray();
+      for (int i = 0; i < 16; i++)
+      {
+        float luma = 0.82f;
+        jColorPalette.Add(luma);
+        jColorPalette.Add(luma);
+        jColorPalette.Add(luma);
+      }
+
+      jQuill.Add(new JProperty("ColorPalette", jColorPalette));
+
+      root.Add(new JProperty("Quill", jQuill));
+      
+      string json = JsonConvert.SerializeObject(root, Formatting.Indented);
+      File.WriteAllText(path, json);
     }
   }
 }
