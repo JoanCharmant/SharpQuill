@@ -8,7 +8,6 @@ namespace SharpQuill
 {
   public class PaintLayerData
   {
-    public int Count;
     public List<Stroke> Strokes = new List<Stroke>();
   }
 }

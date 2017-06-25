@@ -38,7 +38,7 @@ namespace SharpQuill
       // Read all the paint data.
       Stream stream = File.OpenRead(paintDataFilename);
       QBinReader qbinReader = new QBinReader(stream);
-      seq.LastStrokeId = qbinReader.ReadLastStrokeId();
+      seq.LastStrokeId = qbinReader.ReadUInt32();
 
       // TODO: keep a global list of layer data.
       // If two layers point to the same offset only load it once in memory.

@@ -18,10 +18,5 @@ namespace SharpQuill
     public Matrix4f Transform;
     public double AnimOffset;
     public LayerImplementation Implementation;
-
-    public Layer()
-    {
-
-    }
   }
 }

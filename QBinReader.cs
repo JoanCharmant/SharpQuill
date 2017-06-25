@@ -12,15 +12,9 @@ namespace SharpQuill
   /// </summary>
   public class QBinReader : BinaryReader
   {
-    public QBinReader(Stream _stream)
-			: base(_stream)
+    public QBinReader(Stream stream)
+			: base(stream)
 		{
-    }
-
-    public UInt32 ReadLastStrokeId()
-    {
-      UInt32 strokeId = ReadUInt32();
-      return strokeId;
     }
 
     public PaintLayerData ReadPaintLayer()
@@ -28,23 +22,13 @@ namespace SharpQuill
       PaintLayerData pl = new PaintLayerData();
 
       int count = ReadInt32();
-      pl.Strokes = ReadStrokes(count);
+      pl.Strokes = new List<Stroke>();
+      for (int i = 0; i < count; i++)
+        pl.Strokes.Add(ReadStroke());
       
       return pl;
     }
-
-    private List<Stroke> ReadStrokes(int count)
-    {
-      List<Stroke> strokes = new List<Stroke>();
-      if (count == 0)
-        return strokes;
-
-      for (int i = 0; i < count; i++)
-        strokes.Add(ReadStroke());
-       
-      return strokes;
-    }
-
+    
     private Stroke ReadStroke()
     {
       Stroke stroke = new Stroke();
@@ -56,8 +40,8 @@ namespace SharpQuill
       stroke.BrushType = (BrushType)ReadInt16();
       stroke.DisableRotationalOpacity = ReadBoolean();
       stroke.u3 = ReadByte();
-      stroke.CountVertices = ReadInt32();
-      for (int i = 0; i < stroke.CountVertices; i++)
+      int count = ReadInt32();
+      for (int i = 0; i < count; i++)
         stroke.Vertices.Add(ReadVertex());
       
       return stroke;

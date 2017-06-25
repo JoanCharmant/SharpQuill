@@ -13,8 +13,7 @@ namespace SharpQuill
     public BoundingBox BoundingBox;
     public BrushType BrushType;
     public bool DisableRotationalOpacity;
-    public byte u3;
-    public int CountVertices;
+    public byte u3; // Probably a boolean flag.
     public List<Vertex> Vertices = new List<Vertex>();
   }
 }
