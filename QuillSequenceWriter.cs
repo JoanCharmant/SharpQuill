@@ -22,9 +22,14 @@ namespace SharpQuill
       string sequenceFilename = Path.Combine(path, "Quill.json");
       string paintDataFilename = Path.Combine(path, "Quill.qbin");
 
-      WriteManifest(seq, sequenceFilename);
-      
+      // Write the qbin file first to update the layers offsets.
+      FileStream qbinStream = File.Create(paintDataFilename);
+      QBinWriter qbinWriter = new QBinWriter(qbinStream);
+      WriteLastStrokeId(seq, qbinWriter);
+      WritePaintLayerData(seq.RootLayer, qbinWriter);
+      qbinStream.Close();
 
+      WriteManifest(seq, sequenceFilename);
     }
 
     private static void WriteManifest(Sequence seq, string path)
@@ -151,6 +156,32 @@ namespace SharpQuill
     {
       return new JArray(value.MinX, value.MaxX, value.MinY, value.MaxY, value.MinZ, value.MaxZ);
     }
+    
+    private static void WriteLastStrokeId(Sequence seq, QBinWriter qbinWriter)
+    {
+      // 8-byte header.
+      // This value is sometimes seemingly broken in quill files.
+      qbinWriter.Write(seq.LastStrokeId);
+      int padding = 0;
+      qbinWriter.Write(padding);
+    }
 
+    /// <summary>
+    /// Recursive function to write the paint data to file and update the layers offsets.
+    /// </summary>
+    private static void WritePaintLayerData(Layer layer, QBinWriter qbinWriter)
+    {
+      if (layer.Type == LayerType.Group)
+      {
+        foreach (Layer l in ((LayerImplementationGroup)layer.Implementation).Children)
+          WritePaintLayerData(l, qbinWriter);
+      }
+      else if (layer.Type == LayerType.Paint)
+      {
+        LayerImplementationPaint lip = layer.Implementation as LayerImplementationPaint;
+        lip.DataFileOffset = qbinWriter.BaseStream.Position;
+        qbinWriter.Write(lip.Data);
+      }
+    }
   }
 }

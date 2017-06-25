@@ -58,6 +58,7 @@
     <Compile Include="PaintLayerData.cs" />
     <Compile Include="PictureMode.cs" />
     <Compile Include="QBinReader.cs" />
+    <Compile Include="QBinWriter.cs" />
     <Compile Include="QuillSequenceReader.cs" />
     <Compile Include="QuillSequenceWriter.cs" />
     <Compile Include="Sequence.cs" />
