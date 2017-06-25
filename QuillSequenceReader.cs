@@ -10,9 +10,11 @@ using System.Threading.Tasks;
 
 namespace SharpQuill
 {
+  /// <summary>
+  /// Reads a quill project: JSON manifest and binary paint data.
+  /// </summary>
   public static class QuillSequenceReader
   {
-  
     public static Sequence Read(string path)
     {
       if (string.IsNullOrEmpty(path))
@@ -21,38 +23,41 @@ namespace SharpQuill
       if (!Directory.Exists(path))
         throw new InvalidOperationException();
 
-      string filename = Path.Combine(path, "Quill.json");
-      if (!File.Exists(filename))
+      string sequenceFilename = Path.Combine(path, "Quill.json");
+      if (!File.Exists(sequenceFilename))
         throw new InvalidOperationException();
-        
-      string json = File.ReadAllText(filename);
-      dynamic document = JsonConvert.DeserializeObject(json);
 
-      int version = document.Version;
-      Sequence sequence = Parse(document.Sequence);
-
-      // Read all the paint data.
       string paintDataFilename = Path.Combine(path, "Quill.qbin");
       if (!File.Exists(paintDataFilename))
         throw new InvalidOperationException();
-        
+
+      string json = File.ReadAllText(sequenceFilename);
+      dynamic document = JsonConvert.DeserializeObject(json);
+
+      int version = document.Version;
+      Sequence seq = Parse(document.Sequence);
+
+      // Read all the paint data.
       Stream stream = File.OpenRead(paintDataFilename);
       QBinReader qbinReader = new QBinReader(stream);
-      sequence.LastStrokeId = qbinReader.ReadLastStrokeId();
-      ReadPaintLayerData(sequence.RootLayer, qbinReader);
+      seq.LastStrokeId = qbinReader.ReadLastStrokeId();
+
+      // TODO: keep a global list of layer data.
+      // If two layers point to the same offset only load it once in memory.
+      ReadPaintLayerData(seq.RootLayer, qbinReader);
       qbinReader.Close();
 
-      return sequence;
+      return seq;
     }
 
     private static Sequence Parse(dynamic s)
     {
-      Sequence sequence = new Sequence();
-      sequence.BackgroundColor = ParseColor(s.BackgroundColor);
-      sequence.HomePosition = ParseMatrix4(s.HomePosition);
-      sequence.TrackingOrigin = s.TrackingOrigin;
-      sequence.RootLayer = ParseLayer(s.RootLayer);
-      return sequence;
+      Sequence seq = new Sequence();
+      seq.BackgroundColor = ParseColor(s.BackgroundColor);
+      seq.HomePosition = ParseMatrix4(s.HomePosition);
+      seq.TrackingOrigin = s.TrackingOrigin;
+      seq.RootLayer = ParseLayer(s.RootLayer);
+      return seq;
     }
 
     private static Color ParseColor(JArray jValue)
@@ -99,7 +104,6 @@ namespace SharpQuill
       bool parsed = Enum.TryParse((string)l.Type.ToObject(typeof(string)), out layerType);
       layer.Type = parsed ? layerType : LayerType.Unknown;
       
-      //layer.Type = (LayerType)Enum.Parse(typeof(LayerType), (string)l.Type.ToObject(typeof(string)));
       layer.Transform = ParseMatrix4(l.Transform);
       layer.AnimOffset = l.AnimOffset;
       layer.Implementation = ParseLayerImplementation(l.Implementation, layer.Type);

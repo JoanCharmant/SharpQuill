@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace SharpQuill
 {
+  /// <summary>
+  /// Binary reader for qbin files.
+  /// </summary>
   public class QBinReader : BinaryReader
   {
     public QBinReader(Stream _stream)
