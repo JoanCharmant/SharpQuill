@@ -17,7 +17,7 @@ namespace SharpQuill
         throw new InvalidOperationException();
 
       if (!Directory.Exists(path))
-        throw new InvalidOperationException();
+        Directory.CreateDirectory(path);
 
       string sequenceFilename = Path.Combine(path, "Quill.json");
       string paintDataFilename = Path.Combine(path, "Quill.qbin");
@@ -51,7 +51,7 @@ namespace SharpQuill
     {
       JObject jSeq = new JObject();
       jSeq.Add(new JProperty("BackgroundColor", WriteColor(seq.BackgroundColor)));
-      jSeq.Add(new JProperty("HomePosition", WriteMatrix4(seq.HomePosition)));
+      jSeq.Add(new JProperty("HomePosition", WriteTransform(seq.HomePosition)));
       jSeq.Add(new JProperty("TrackingOrigin", seq.TrackingOrigin));
       jSeq.Add(new JProperty("RootLayer", WriteLayer(seq.RootLayer)));
       return jSeq;
@@ -68,7 +68,7 @@ namespace SharpQuill
       jLayer.Add(new JProperty("BBoxVisible", layer.BBoxVisible));
       jLayer.Add(new JProperty("Opacity", layer.Opacity));
       jLayer.Add(new JProperty("Type", layer.Type.ToString()));
-      jLayer.Add(new JProperty("Transform", WriteMatrix4(layer.Transform)));
+      jLayer.Add(new JProperty("Transform", WriteTransform(layer.Transform)));
       jLayer.Add(new JProperty("AnimOffset", layer.AnimOffset));
       jLayer.Add(new JProperty("Implementation", WriteLayerImplementation(layer.Implementation, layer.Type)));
       return jLayer;
@@ -143,7 +143,7 @@ namespace SharpQuill
       return new JArray(value.R, value.G, value.B);
     }
 
-    private static JArray WriteMatrix4(Matrix4f value)
+    private static JArray WriteTransform(Transform value)
     {
       return new JArray(value.data);
 

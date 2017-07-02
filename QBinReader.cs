@@ -86,9 +86,9 @@ namespace SharpQuill
       return c;
     }
 
-    private Vector3f ReadVector3()
+    private Vector3 ReadVector3()
     {
-      Vector3f v = new Vector3f();
+      Vector3 v = new Vector3();
 
       v.X = ReadSingle();
       v.Y = ReadSingle();

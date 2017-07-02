@@ -52,7 +52,7 @@ namespace SharpQuill
     {
       Sequence seq = new Sequence();
       seq.BackgroundColor = ParseColor(s.Sequence.BackgroundColor);
-      seq.HomePosition = ParseMatrix4(s.Sequence.HomePosition);
+      seq.HomePosition = ParseTransform(s.Sequence.HomePosition);
       seq.TrackingOrigin = s.Sequence.TrackingOrigin;
       seq.RootLayer = ParseLayer(s.Sequence.RootLayer);
       return seq;
@@ -68,14 +68,14 @@ namespace SharpQuill
       return new Color(value);
     }
 
-    private static Matrix4f ParseMatrix4(JArray jValue)
+    private static Transform ParseTransform(JArray jValue)
     {
       List<float> value = jValue.ToObject<List<float>>();
 
       if (value.Count != 16)
         throw new InvalidDataException();
 
-      return new Matrix4f(value);
+      return new Transform(value);
     }
 
     private static BoundingBox ParseBoundingBox(JArray jValue)
@@ -102,7 +102,7 @@ namespace SharpQuill
       bool parsed = Enum.TryParse((string)l.Type.ToObject(typeof(string)), out layerType);
       layer.Type = parsed ? layerType : LayerType.Unknown;
       
-      layer.Transform = ParseMatrix4(l.Transform);
+      layer.Transform = ParseTransform(l.Transform);
       layer.AnimOffset = l.AnimOffset;
       layer.Implementation = ParseLayerImplementation(l.Implementation, layer.Type);
       return layer;

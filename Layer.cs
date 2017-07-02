@@ -15,7 +15,7 @@ namespace SharpQuill
     public bool BBoxVisible;
     public float Opacity;
     public LayerType Type;
-    public Matrix4f Transform;
+    public Transform Transform;
     public double AnimOffset;
     public LayerImplementation Implementation;
   }

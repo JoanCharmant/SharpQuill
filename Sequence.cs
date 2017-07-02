@@ -9,7 +9,7 @@ namespace SharpQuill
     public class Sequence
     {
       public Color BackgroundColor;
-      public Matrix4f HomePosition;
+      public Transform HomePosition;
       public int TrackingOrigin; // Unsure of type.
       public Layer RootLayer;
       public UInt32 LastStrokeId;

@@ -54,7 +54,7 @@ namespace SharpQuill
       Write(vertex.Width);
     }
 
-    public void Write(Vector3f v)
+    public void Write(Vector3 v)
     {
       Write(v.X);
       Write(v.Y);
