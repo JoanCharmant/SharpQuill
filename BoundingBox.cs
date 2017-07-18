@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -23,6 +24,12 @@ namespace SharpQuill
       MaxY = value[3];
       MinZ = value[4];
       MaxZ = value[5];
+    }
+
+    public override string ToString()
+    {
+      return string.Format(CultureInfo.InvariantCulture, "{0}, {1}, {2}, {3}, {4}, {5}", 
+        MinX, MaxX, MinY, MaxY, MinZ, MaxZ);
     }
   }
 }
