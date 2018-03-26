@@ -59,6 +59,7 @@
     <Compile Include="LayerImplementationGroup.cs" />
     <Compile Include="LayerImplementationPaint13.cs" />
     <Compile Include="LayerType.cs" />
+    <Compile Include="QuillUtil.cs" />
     <Compile Include="Transform.cs" />
     <Compile Include="DrawingData.cs" />
     <Compile Include="PictureMode.cs" />
