@@ -37,7 +37,10 @@ namespace SharpQuill
       
       stroke.u2 = ReadInt32();
       stroke.BoundingBox = ReadBoundingBox();
-      stroke.BrushType = (BrushType)ReadInt16();
+
+      short brushType = ReadInt16();
+
+      stroke.BrushType = (BrushType)brushType;
       stroke.DisableRotationalOpacity = ReadBoolean();
       stroke.u3 = ReadByte();
       int count = ReadInt32();

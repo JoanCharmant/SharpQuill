@@ -10,8 +10,8 @@ namespace SharpQuill
   {
     Line, 
     Ribbon, 
-    Sphere, 
-    Flat,
+    Cylinder, 
+    Ellipse,
     Cube,
     Unknown
   }
