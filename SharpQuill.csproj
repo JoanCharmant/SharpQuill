@@ -44,18 +44,23 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Animation.cs" />
     <Compile Include="BoundingBox.cs" />
     <Compile Include="BrushType.cs" />
     <Compile Include="Color.cs" />
+    <Compile Include="Drawing.cs" />
+    <Compile Include="KeepAlive.cs" />
+    <Compile Include="KeepAliveType.cs" />
     <Compile Include="Layer.cs" />
     <Compile Include="LayerImplementation.cs" />
+    <Compile Include="LayerImplementationPaint.cs" />
     <Compile Include="LayerImplementationPicture.cs" />
     <Compile Include="LayerImplementationSound.cs" />
     <Compile Include="LayerImplementationGroup.cs" />
-    <Compile Include="LayerImplementationPaint.cs" />
+    <Compile Include="LayerImplementationPaint13.cs" />
     <Compile Include="LayerType.cs" />
     <Compile Include="Transform.cs" />
-    <Compile Include="PaintLayerData.cs" />
+    <Compile Include="DrawingData.cs" />
     <Compile Include="PictureMode.cs" />
     <Compile Include="QBinReader.cs" />
     <Compile Include="QBinWriter.cs" />

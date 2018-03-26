@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace SharpQuill
 {
-  public class PaintLayerData
+  public class KeepAlive
   {
-    public List<Stroke> Strokes = new List<Stroke>();
+    public KeepAliveType Type;
   }
 }

@@ -6,17 +6,17 @@ using System.Threading.Tasks;
 
 namespace SharpQuill
 {
-    public class Sequence
-    {
-      public Color BackgroundColor;
-      public Transform HomePosition;
-      public int TrackingOrigin; // Unsure of type.
-      public Layer RootLayer;
-      public UInt32 LastStrokeId;
+  public class Sequence
+  {
+    public Color BackgroundColor;
+    public Transform HomePosition;
+    public int TrackingOrigin; // Unsure of type.
+    public bool AnimateOnStart;
+    public Layer RootLayer;
+    public UInt32 LastStrokeId;
 
-      public Sequence()
-      {
-        // TODO: reasonable default values.
-      }
+    public Sequence()
+    {
     }
+  }
 }

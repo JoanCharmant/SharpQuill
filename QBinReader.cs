@@ -17,9 +17,9 @@ namespace SharpQuill
 		{
     }
 
-    public PaintLayerData ReadPaintLayer()
+    public DrawingData ReadDrawingData()
     {
-      PaintLayerData pl = new PaintLayerData();
+      DrawingData pl = new DrawingData();
 
       int count = ReadInt32();
       pl.Strokes = new List<Stroke>();

@@ -54,6 +54,7 @@ namespace SharpQuill
       seq.BackgroundColor = ParseColor(s.Sequence.BackgroundColor);
       seq.HomePosition = ParseTransform(s.Sequence.HomePosition);
       seq.TrackingOrigin = s.Sequence.TrackingOrigin;
+      seq.AnimateOnStart = s.Sequence.AnimateOnStart;
       seq.RootLayer = ParseLayer(s.Sequence.RootLayer);
       return seq;
     }
@@ -87,7 +88,40 @@ namespace SharpQuill
 
       return new BoundingBox(value);
     }
+
+    private static Drawing ParseDrawing(dynamic d)
+    {
+      Drawing drawing = new Drawing();
+      drawing.BoundingBox = ParseBoundingBox(d.BoundingBox);
+
+      long offset;
+      bool parsed = long.TryParse((string)d.DataFileOffset.ToObject(typeof(string)), NumberStyles.HexNumber, CultureInfo.InvariantCulture, out offset);
+      drawing.DataFileOffset = parsed ? offset : -1;
+
+      return drawing;
+    }
     
+    private static KeepAlive ParseKeepAlive(dynamic ka)
+    {
+      KeepAlive keepAlive = new KeepAlive();
+
+      KeepAliveType keepAliveType;
+      bool parsed = Enum.TryParse((string)ka.Type.ToObject(typeof(string)), out keepAliveType);
+      keepAlive.Type = parsed ? keepAliveType : KeepAliveType.None;
+      
+      return keepAlive;
+    }
+
+    private static Animation ParseAnimation(dynamic a)
+    {
+      Animation animation = new Animation();
+
+      animation.Frames = a.Frames.ToObject<List<float>>();
+      animation.Spans = a.Spans.ToObject<List<float>>();
+
+      return animation;
+    }
+
     private static Layer ParseLayer(dynamic l)
     {
       Layer layer = new Layer();
@@ -101,9 +135,16 @@ namespace SharpQuill
       LayerType layerType;
       bool parsed = Enum.TryParse((string)l.Type.ToObject(typeof(string)), out layerType);
       layer.Type = parsed ? layerType : LayerType.Unknown;
-      
-      layer.Transform = ParseTransform(l.Transform);
+
+      layer.IsAnimationCycle = l.IsAnimationCycle;
+      layer.AnimationCycleRepeat = l.AnimationCycleRepeat;
+      layer.KeepAlive = ParseKeepAlive(l.KeepAlive);
+      layer.Animation = ParseAnimation(l.Animation);
       layer.AnimOffset = l.AnimOffset;
+
+      layer.Transform = ParseTransform(l.Transform);
+      layer.Pivot = ParseTransform(l.Pivot);
+
       layer.Implementation = ParseLayerImplementation(l.Implementation, layer.Type);
       return layer;
     }
@@ -126,13 +167,14 @@ namespace SharpQuill
         case LayerType.Paint:
         {
             LayerImplementationPaint impl = new LayerImplementationPaint();
-            impl.BoundingBox = ParseBoundingBox(li.BoundingBox);
-            impl.AnimSpeed = li.AnimSpeed;
-            impl.PlaybackReduce = li.PlaybackReduce;
 
-            long offset;
-            bool parsed = long.TryParse((string)li.DataFileOffset.ToObject(typeof(string)), NumberStyles.HexNumber, CultureInfo.InvariantCulture, out offset);
-            impl.DataFileOffset = parsed ? offset : -1;
+            impl.Framerate = li.Framerate;
+            impl.MaxRepeatCount = li.MaxRepeatCount;
+
+            foreach (var d in li.Drawings)
+              impl.Drawings.Add(ParseDrawing(d));
+
+            impl.Frames = li.Frames.ToObject<List<float>>();
             
             result = impl;
             break;
@@ -153,7 +195,12 @@ namespace SharpQuill
           {
             LayerImplementationSound impl = new LayerImplementationSound();
             impl.Duration = li.Duration;
+            impl.Volume = li.Volume;
+            impl.AttenMode = li.AttenMode;
+            impl.AttenMin = li.AttenMin;
+            impl.AttenMax = li.AttenMax;
             impl.Loop = li.Loop;
+            impl.IsSpatialized = li.IsSpatialized;
             impl.Play = li.Play;
             impl.Filename = li.Filename;
 
@@ -176,8 +223,15 @@ namespace SharpQuill
       else if (layer.Type == LayerType.Paint)
       {
         LayerImplementationPaint lip = layer.Implementation as LayerImplementationPaint;
-        qbinReader.BaseStream.Seek(lip.DataFileOffset, SeekOrigin.Begin);
-        lip.Data = qbinReader.ReadPaintLayer();
+
+        foreach (Drawing drawing in lip.Drawings)
+        {
+          qbinReader.BaseStream.Seek(drawing.DataFileOffset, SeekOrigin.Begin);
+          drawing.Data = qbinReader.ReadDrawingData();
+
+        }
+
+        
       }
     }
   }

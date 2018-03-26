@@ -14,7 +14,7 @@ namespace SharpQuill
     {
     }
     
-    public void Write(PaintLayerData value)
+    public void Write(DrawingData value)
     {
       Write(value.Strokes.Count);
       foreach (Stroke stroke in value.Strokes)

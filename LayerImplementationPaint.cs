@@ -8,10 +8,9 @@ namespace SharpQuill
 {
   public class LayerImplementationPaint : LayerImplementation
   {
-    public BoundingBox BoundingBox;
-    public float AnimSpeed;
-    public int PlaybackReduce; // Type unsure. (1).
-    public long DataFileOffset;
-    public PaintLayerData Data;
+    public float Framerate;
+    public int MaxRepeatCount;
+    public List<Drawing> Drawings = new List<Drawing>();
+    public List<float> Frames = new List<float>();
   }
 }

@@ -27,7 +27,7 @@ namespace SharpQuill
       FileStream qbinStream = File.Create(paintDataFilename);
       QBinWriter qbinWriter = new QBinWriter(qbinStream);
       WriteLastStrokeId(seq, qbinWriter);
-      WritePaintLayerData(seq.RootLayer, qbinWriter);
+      WriteDrawingData(seq.RootLayer, qbinWriter);
       qbinStream.Close();
 
       WriteManifest(seq, sequenceFilename);
@@ -53,6 +53,7 @@ namespace SharpQuill
       jSeq.Add(new JProperty("BackgroundColor", WriteColor(seq.BackgroundColor)));
       jSeq.Add(new JProperty("HomePosition", WriteTransform(seq.HomePosition)));
       jSeq.Add(new JProperty("TrackingOrigin", seq.TrackingOrigin));
+      jSeq.Add(new JProperty("AnimateOnStart", seq.AnimateOnStart));
       jSeq.Add(new JProperty("RootLayer", WriteLayer(seq.RootLayer)));
       return jSeq;
     }
@@ -68,8 +69,15 @@ namespace SharpQuill
       jLayer.Add(new JProperty("BBoxVisible", layer.BBoxVisible));
       jLayer.Add(new JProperty("Opacity", layer.Opacity));
       jLayer.Add(new JProperty("Type", layer.Type.ToString()));
-      jLayer.Add(new JProperty("Transform", WriteTransform(layer.Transform)));
+      jLayer.Add(new JProperty("IsAnimationCycle", layer.IsAnimationCycle));
+      jLayer.Add(new JProperty("AnimationCycleRepeat", layer.AnimationCycleRepeat));
+
+      jLayer.Add(new JProperty("KeepAlive", WriteKeepAlive(layer.KeepAlive)));
+      jLayer.Add(new JProperty("Animation", WriteAnimation(layer.Animation)));
       jLayer.Add(new JProperty("AnimOffset", layer.AnimOffset));
+      
+      jLayer.Add(new JProperty("Transform", WriteTransform(layer.Transform)));
+      jLayer.Add(new JProperty("Pivot", WriteTransform(layer.Pivot)));
       jLayer.Add(new JProperty("Implementation", WriteLayerImplementation(layer.Implementation, layer.Type)));
       return jLayer;
     }
@@ -108,11 +116,21 @@ namespace SharpQuill
     {
       JObject jLayer = new JObject();
 
-      jLayer.Add(new JProperty("BoundingBox", WriteBoundingBox(impl.BoundingBox)));
-      jLayer.Add(new JProperty("AnimSpeed", impl.AnimSpeed));
-      jLayer.Add(new JProperty("PlaybackReduce", impl.PlaybackReduce));
-      jLayer.Add(new JProperty("DataFileOffset", impl.DataFileOffset.ToString("X")));
+      jLayer.Add(new JProperty("Framerate", impl.Framerate));
+      jLayer.Add(new JProperty("MaxRepeatCount", impl.MaxRepeatCount));
 
+      JArray jDrawings = new JArray();
+      foreach (Drawing drawing in impl.Drawings)
+        jDrawings.Add(WriteDrawing(drawing));
+
+      jLayer.Add(new JProperty("Drawings", jDrawings));
+
+      JArray jFrames = new JArray();
+      foreach (float frame in impl.Frames)
+        jFrames.Add(frame);
+
+      jLayer.Add(new JProperty("Frames", jFrames));
+      
       return jLayer;
     }
 
@@ -131,7 +149,12 @@ namespace SharpQuill
       JObject jLayer = new JObject();
 
       jLayer.Add(new JProperty("Duration", impl.Duration));
+      jLayer.Add(new JProperty("Volume", impl.Volume));
+      jLayer.Add(new JProperty("AttenMode", impl.AttenMode));
+      jLayer.Add(new JProperty("AttenMin", impl.AttenMin));
+      jLayer.Add(new JProperty("AttenMax", impl.AttenMax));
       jLayer.Add(new JProperty("Loop", impl.Loop));
+      jLayer.Add(new JProperty("IsSpatialized", impl.IsSpatialized));
       jLayer.Add(new JProperty("Play", impl.Play));
       jLayer.Add(new JProperty("File", impl.Filename));
 
@@ -158,7 +181,36 @@ namespace SharpQuill
     {
       return new JArray(value.MinX, value.MaxX, value.MinY, value.MaxY, value.MinZ, value.MaxZ);
     }
-    
+
+    private static JObject WriteKeepAlive(KeepAlive value)
+    {
+      JObject jKA = new JObject();
+
+      jKA.Add(new JProperty("Type", value.Type.ToString()));
+
+      return jKA;
+    }
+
+    private static JObject WriteAnimation(Animation value)
+    {
+      JObject jAnimation = new JObject();
+
+      jAnimation.Add(new JProperty("Frames", new JArray(value.Frames)));
+      jAnimation.Add(new JProperty("Spans", new JArray(value.Spans)));
+
+      return jAnimation;
+    }
+
+    private static JObject WriteDrawing(Drawing drawing)
+    {
+      JObject jDrawing = new JObject();
+
+      jDrawing.Add(new JProperty("BoundingBox", WriteBoundingBox(drawing.BoundingBox)));
+      jDrawing.Add(new JProperty("DataFileOffset", drawing.DataFileOffset.ToString("X")));
+
+      return jDrawing;
+    }
+
     private static void WriteLastStrokeId(Sequence seq, QBinWriter qbinWriter)
     {
       // 8-byte header.
@@ -170,22 +222,27 @@ namespace SharpQuill
 
     /// <summary>
     /// Recursive function to write the paint data to file and update the layers offsets.
+    /// This is called with the root layer and will write all the data for the sequence.
     /// </summary>
-    private static void WritePaintLayerData(Layer layer, QBinWriter qbinWriter)
+    private static void WriteDrawingData(Layer layer, QBinWriter qbinWriter)
     {
       if (layer.Type == LayerType.Group)
       {
         foreach (Layer l in ((LayerImplementationGroup)layer.Implementation).Children)
-          WritePaintLayerData(l, qbinWriter);
+          WriteDrawingData(l, qbinWriter);
       }
       else if (layer.Type == LayerType.Paint)
       {
         LayerImplementationPaint lip = layer.Implementation as LayerImplementationPaint;
-        lip.DataFileOffset = qbinWriter.BaseStream.Position;
-        qbinWriter.Write(lip.Data);
+
+        foreach (Drawing drawing in lip.Drawings)
+        {
+          drawing.DataFileOffset = qbinWriter.BaseStream.Position;
+          qbinWriter.Write(drawing.Data);
+        }
       }
     }
-
+    
     private static void WriteState(string path)
     {
       // We write the state just to be able to read the file in Quill.
@@ -196,9 +253,21 @@ namespace SharpQuill
       
       JObject jQuill = new JObject();
       jQuill.Add(new JProperty("ShowGrid", false));
+
+      JObject jDetailRender = new JObject();
+
+      JObject jSurface = new JObject();
+      jSurface.Add(new JProperty("Texture", "None"));
+      jSurface.Add(new JProperty("Scale", 1.0f));
+
+      jDetailRender.Add(new JProperty("Surface", jSurface));
+
+      jQuill.Add(new JProperty("DetailRender", jDetailRender));
+      jQuill.Add(new JProperty("ShowViewpoints", true));
       jQuill.Add(new JProperty("MoveLayer", ""));
       jQuill.Add(new JProperty("PaintLayer", ""));
-      jQuill.Add(new JProperty("DirectManipulation", false));
+      jQuill.Add(new JProperty("ActiveViewpoint", "ViewPoint_0"));
+      jQuill.Add(new JProperty("SelectedViewpoint", "ViewPoint_0"));
       jQuill.Add(new JProperty("ToolID", 0));
 
       JObject jTool = new JObject();
@@ -206,8 +275,8 @@ namespace SharpQuill
       jTool.Add(new JProperty("Color", new List<float>() { 0, 0, 0 }));
       jTool.Add(new JProperty("Opacity", 1.0f));
       jTool.Add(new JProperty("Size", 0.01f));
-      jTool.Add(new JProperty("TransparentTaper", true));
-      jTool.Add(new JProperty("WidthTaper", true));
+      jTool.Add(new JProperty("TransparentTaper", "None"));
+      jTool.Add(new JProperty("WidthTaper", "Pressure"));
       jTool.Add(new JProperty("DirectionalStroke", false));
       jQuill.Add(new JProperty("Tool", jTool));
 
