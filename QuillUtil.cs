@@ -197,7 +197,18 @@ namespace SharpQuill
     }
 
     /// <summary>
-    /// Find a layer at the specified path. Does not create the groups along the way.
+    /// Adds a layer to a group.
+    /// </summary>
+    public static void Add(Sequence seq, string path, Layer layer)
+    {
+      Layer layerGroup = CreateGroupLayer(seq, path);
+
+      List<Layer> children = ((LayerImplementationGroup)layerGroup.Implementation).Children;
+      children.Add(layer);
+    }
+
+    /// <summary>
+    /// Finds a layer at the specified path. Does not create the groups along the way.
     /// </summary>
     public static Layer FindLayer(Sequence seq, string path)
     {
