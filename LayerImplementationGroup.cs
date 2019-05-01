@@ -9,7 +9,5 @@ namespace SharpQuill
   public class LayerImplementationGroup : LayerImplementation
   {
     public List<Layer> Children = new List<Layer>();
-
-    
   }
 }

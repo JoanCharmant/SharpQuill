@@ -8,7 +8,10 @@ namespace SharpQuill
 {
   public class Animation
   {
-    public List<float> Frames = new List<float>();  // Unsure of type, never seen it filled.
-    public List<float> Spans = new List<float>();   // Unsure of type.
+    public float Duration;
+    public bool Timeline;
+    public float StartOffset;
+    public float MaxRepeatCount;
+    public Keyframes Keys = new Keyframes();
   }
 }

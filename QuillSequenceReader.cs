@@ -51,12 +51,34 @@ namespace SharpQuill
     private static Sequence Parse(dynamic s)
     {
       Sequence seq = new Sequence();
+      seq.Metadata = ParseMetadata(s.Sequence.Metadata);
+      seq.Gallery = ParseGallery(s.Sequence.Gallery);
       seq.BackgroundColor = ParseColor(s.Sequence.BackgroundColor);
-      seq.HomePosition = ParseTransform(s.Sequence.HomePosition);
-      seq.TrackingOrigin = s.Sequence.TrackingOrigin;
-      seq.AnimateOnStart = s.Sequence.AnimateOnStart;
+      seq.DefaultViewpoint = s.Sequence.DefaultViewpoint.ToObject(typeof(string));
       seq.RootLayer = ParseLayer(s.Sequence.RootLayer);
       return seq;
+    }
+
+    private static Metadata ParseMetadata(dynamic m)
+    {
+      Metadata metadata = new Metadata();
+
+      metadata.Title = m.Title.ToObject(typeof(string));
+      metadata.Description = m.Description.ToObject(typeof(string));
+      
+      return metadata;
+    }
+
+    private static Gallery ParseGallery(dynamic g)
+    {
+      Gallery gallery = new Gallery();
+      
+      // TODO.
+      // ParseThumbnails: object.
+      // ParsePictures: list.
+      // Picture: Type, DataFileOffset, Metadata: VerticalFOV, HorizontalFOV.
+
+      return gallery;
     }
 
     private static Color ParseColor(JArray jValue)
@@ -69,14 +91,36 @@ namespace SharpQuill
       return new Color(value);
     }
 
-    private static Transform ParseTransform(JArray jValue)
+    private static Vector3 ParseVector3(JArray jValue)
     {
       List<float> value = jValue.ToObject<List<float>>();
 
-      if (value.Count != 16)
+      if (value.Count != 3)
         throw new InvalidDataException();
 
-      return new Transform(value);
+      return new Vector3(value);
+    }
+
+    private static Vector4 ParseVector4(JArray jValue)
+    {
+      List<float> value = jValue.ToObject<List<float>>();
+
+      if (value.Count != 4)
+        throw new InvalidDataException();
+
+      return new Vector4(value);
+    }
+
+    private static Transform ParseTransform(dynamic t)
+    {
+      Transform transform = new Transform();
+
+      transform.Rotation = ParseVector4(t.Rotation);
+      transform.Scale = t.Scale;
+      transform.Flip = t.Flip;
+      transform.Translation = ParseVector3(t.Translation);
+      
+      return transform;
     }
 
     private static BoundingBox ParseBoundingBox(JArray jValue)
@@ -116,10 +160,55 @@ namespace SharpQuill
     {
       Animation animation = new Animation();
 
-      animation.Frames = a.Frames.ToObject<List<float>>();
-      animation.Spans = a.Spans.ToObject<List<float>>();
+      animation.Duration = a.Duration;
+      animation.Timeline = a.Timeline;
+      animation.StartOffset = a.StartOffset;
+      animation.MaxRepeatCount = a.MaxRepeatCount;
 
+      animation.Keys = ParseKeyframes(a.Keys);
+      
       return animation;
+    }
+
+    private static Keyframes ParseKeyframes(dynamic kkff)
+    {
+      Keyframes keyframes = new Keyframes();
+
+      foreach (var kf in kkff.Visibility)
+        keyframes.Visibility.Add(ParseKeyframeBool(kf));
+
+      foreach (var kf in kkff.Opacity)
+        keyframes.Opacity.Add(ParseKeyframeFloat(kf));
+
+      return keyframes;
+    }
+
+    private static KeyframeBool ParseKeyframeBool(dynamic kf)
+    {
+      KeyframeBool keyframe = new KeyframeBool();
+
+      keyframe.Time = kf.Time;
+      keyframe.Value = kf.Value;
+
+      Interpolation interpolation;
+      bool parsed = Enum.TryParse((string)kf.Interpolation.ToObject(typeof(string)), out interpolation);
+      keyframe.Interpolation = parsed ? interpolation : Interpolation.None;
+      
+      return keyframe;
+    }
+
+    private static KeyframeFloat ParseKeyframeFloat(dynamic kf)
+    {
+      KeyframeFloat keyframe = new KeyframeFloat();
+
+      keyframe.Time = kf.Time;
+      keyframe.Value = kf.Value;
+
+      Interpolation interpolation;
+      bool parsed = Enum.TryParse((string)kf.Interpolation.ToObject(typeof(string)), out interpolation);
+      keyframe.Interpolation = parsed ? interpolation : Interpolation.None;
+
+      return keyframe;
     }
 
     private static Layer ParseLayer(dynamic l)
@@ -136,15 +225,12 @@ namespace SharpQuill
       bool parsed = Enum.TryParse((string)l.Type.ToObject(typeof(string)), out layerType);
       layer.Type = parsed ? layerType : LayerType.Unknown;
 
-      layer.IsAnimationCycle = l.IsAnimationCycle;
-      layer.AnimationCycleRepeat = l.AnimationCycleRepeat;
+      layer.IsModelTopLayer = l.IsModelTopLayer;
       layer.KeepAlive = ParseKeepAlive(l.KeepAlive);
-      layer.Animation = ParseAnimation(l.Animation);
-      layer.AnimOffset = l.AnimOffset;
-
       layer.Transform = ParseTransform(l.Transform);
       layer.Pivot = ParseTransform(l.Pivot);
-
+      layer.Animation = ParseAnimation(l.Animation);
+      
       layer.Implementation = ParseLayerImplementation(l.Implementation, layer.Type);
       return layer;
     }
@@ -183,28 +269,42 @@ namespace SharpQuill
           {
             LayerImplementationPicture impl = new LayerImplementationPicture();
             
-            PictureMode mode;
-            bool parsed = Enum.TryParse((string)li.Mode.ToObject(typeof(string)), out mode);
-            impl.Mode = parsed ? mode : PictureMode.Unknown;
 
-            impl.Filename = li.Filename;
-            result = impl;
+
+            //PictureMode mode;
+            //bool parsed = Enum.TryParse((string)li.Mode.ToObject(typeof(string)), out mode);
+            //impl.Mode = parsed ? mode : PictureMode.Unknown;
+
+            //impl.Filename = li.Filename;
+            //result = impl;
             break;
           }
         case LayerType.Sound:
           {
             LayerImplementationSound impl = new LayerImplementationSound();
-            impl.Duration = li.Duration;
-            impl.Volume = li.Volume;
-            impl.AttenMode = li.AttenMode;
-            impl.AttenMin = li.AttenMin;
-            impl.AttenMax = li.AttenMax;
-            impl.Loop = li.Loop;
-            impl.IsSpatialized = li.IsSpatialized;
-            impl.Play = li.Play;
-            impl.Filename = li.Filename;
+
+
+            //impl.Duration = li.Duration;
+            //impl.Volume = li.Volume;
+            //impl.AttenMode = li.AttenMode;
+            //impl.AttenMin = li.AttenMin;
+            //impl.AttenMax = li.AttenMax;
+            //impl.Loop = li.Loop;
+            //impl.IsSpatialized = li.IsSpatialized;
+            //impl.Play = li.Play;
+            //impl.Filename = li.Filename;
 
             result = impl;
+            break;
+          }
+        case LayerType.Viewpoint:
+          {
+
+            break;
+          }
+        case LayerType.Model:
+          {
+
             break;
           }
       }
@@ -228,10 +328,7 @@ namespace SharpQuill
         {
           qbinReader.BaseStream.Seek(drawing.DataFileOffset, SeekOrigin.Begin);
           drawing.Data = qbinReader.ReadDrawingData();
-
         }
-
-        
       }
     }
   }

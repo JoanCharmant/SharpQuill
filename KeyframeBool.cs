@@ -6,14 +6,10 @@ using System.Threading.Tasks;
 
 namespace SharpQuill
 {
-  public enum LayerType
+  public class KeyframeBool
   {
-    Group,
-    Paint,
-    Sound,
-    Picture,
-    Viewpoint,
-    Model,
-    Unknown
+    public float Time;
+    public bool Value;
+    public Interpolation Interpolation;
   }
 }

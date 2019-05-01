@@ -67,20 +67,37 @@
     <Compile Include="BrushType.cs" />
     <Compile Include="Color.cs" />
     <Compile Include="Drawing.cs" />
+    <Compile Include="Interpolation.cs" />
     <Compile Include="KeepAlive.cs" />
     <Compile Include="KeepAliveType.cs" />
+    <Compile Include="KeyframeFloat.cs" />
+    <Compile Include="Keyframes.cs" />
+    <Compile Include="KeyframeBool.cs" />
     <Compile Include="Layer.cs" />
     <Compile Include="LayerImplementation.cs" />
+    <Compile Include="LayerImplementationModel.cs" />
     <Compile Include="LayerImplementationPaint.cs" />
     <Compile Include="LayerImplementationPicture.cs" />
     <Compile Include="LayerImplementationSound.cs" />
     <Compile Include="LayerImplementationGroup.cs" />
     <Compile Include="LayerImplementationPaint13.cs" />
+    <Compile Include="LayerImplementationViewpoint.cs" />
     <Compile Include="LayerType.cs" />
+    <Compile Include="Gallery.cs" />
+    <Compile Include="Metadata.cs" />
+    <Compile Include="ModelShadingModel.cs" />
+    <Compile Include="Picture.cs" />
+    <Compile Include="PictureMetadata.cs" />
     <Compile Include="QuillUtil.cs" />
+    <Compile Include="SoundAttenuation.cs" />
+    <Compile Include="SoundAttenuationMode.cs" />
+    <Compile Include="SoundModifier.cs" />
+    <Compile Include="SoundModifierType.cs" />
+    <Compile Include="SoundType.cs" />
+    <Compile Include="Thumbnails.cs" />
     <Compile Include="Transform.cs" />
     <Compile Include="DrawingData.cs" />
-    <Compile Include="PictureMode.cs" />
+    <Compile Include="PictureType.cs" />
     <Compile Include="QBinReader.cs" />
     <Compile Include="QBinWriter.cs" />
     <Compile Include="QuillSequenceReader.cs" />
@@ -89,6 +106,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Stroke.cs" />
     <Compile Include="Vector3.cs" />
+    <Compile Include="Vector4.cs" />
     <Compile Include="Vertex.cs" />
   </ItemGroup>
   <ItemGroup>

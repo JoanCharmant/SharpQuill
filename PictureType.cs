@@ -6,14 +6,10 @@ using System.Threading.Tasks;
 
 namespace SharpQuill
 {
-  public enum LayerType
+  public enum PictureType
   {
-    Group,
-    Paint,
-    Sound,
-    Picture,
-    Viewpoint,
-    Model,
+    TwoD,
+    TwoDDepth,
     Unknown
   }
 }

@@ -8,13 +8,13 @@ namespace SharpQuill
 {
   public class Sequence
   {
+    public Metadata Metadata;
+    public Gallery Gallery;
     public Color BackgroundColor;
-    public Transform HomePosition;
-    public int TrackingOrigin; // Unsure of type.
-    public bool AnimateOnStart;
+    public string DefaultViewpoint;
     public Layer RootLayer;
     public UInt32 LastStrokeId;
-
+    
     public Sequence()
     {
     }

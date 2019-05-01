@@ -6,14 +6,8 @@ using System.Threading.Tasks;
 
 namespace SharpQuill
 {
-  public enum LayerType
+  public enum SoundModifierType
   {
-    Group,
-    Paint,
-    Sound,
-    Picture,
-    Viewpoint,
-    Model,
-    Unknown
+    None,
   }
 }

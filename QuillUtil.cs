@@ -12,11 +12,10 @@ namespace SharpQuill
     public static Sequence CreateDefaultSequence(bool createDefaultPaintLayer)
     {
       Sequence seq = new Sequence();
+      seq.Metadata = new Metadata();
+      seq.Gallery = new Gallery();
       seq.BackgroundColor = new Color(0.8f, 0.8f, 0.8f);
-      seq.HomePosition = new Transform();
-      seq.TrackingOrigin = 1;
-      seq.AnimateOnStart = false;
-
+      seq.DefaultViewpoint = "Root/InitialSpawnArea";
       Layer root = CreateDefaultGroup("Root");
 
       if (createDefaultPaintLayer)
@@ -37,14 +36,14 @@ namespace SharpQuill
       layer.BBoxVisible = false;
       layer.Opacity = 1.0f;
       layer.Type = LayerType.Group;
-      layer.IsAnimationCycle = false;
-      layer.AnimationCycleRepeat = 0;
+      layer.IsModelTopLayer = false;
       layer.KeepAlive = new KeepAlive();
       layer.KeepAlive.Type = KeepAliveType.None;
-      layer.Animation = new Animation();
-      layer.AnimOffset = 0;
       layer.Transform = new Transform();
       layer.Pivot = new Transform();
+      layer.Animation = new Animation();
+      layer.Animation.Keys = new Keyframes();
+
       LayerImplementationGroup impl = new LayerImplementationGroup();
       impl.Children = new List<Layer>();
       layer.Implementation = impl;
@@ -62,14 +61,14 @@ namespace SharpQuill
       layer.BBoxVisible = false;
       layer.Opacity = 1.0f;
       layer.Type = LayerType.Paint;
-      layer.IsAnimationCycle = false;
-      layer.AnimationCycleRepeat = 0;
+      layer.IsModelTopLayer = false;
       layer.KeepAlive = new KeepAlive();
       layer.KeepAlive.Type = KeepAliveType.None;
-      layer.Animation = new Animation();
-      layer.AnimOffset = 0;
       layer.Transform = new Transform();
       layer.Pivot = new Transform();
+      layer.Animation = new Animation();
+      layer.Animation.Keys = new Keyframes();
+      
       LayerImplementationPaint impl = new LayerImplementationPaint();
       
       impl.Framerate = 24.0f;

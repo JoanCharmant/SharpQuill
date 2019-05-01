@@ -6,14 +6,10 @@ using System.Threading.Tasks;
 
 namespace SharpQuill
 {
-  public enum LayerType
+  public class SoundAttenuation
   {
-    Group,
-    Paint,
-    Sound,
-    Picture,
-    Viewpoint,
-    Model,
-    Unknown
+    public SoundAttenuationMode Mode;
+    public float Minimum;
+    public float Maximum;
   }
 }

@@ -50,12 +50,39 @@ namespace SharpQuill
     private static JObject WriteSequence(Sequence seq)
     {
       JObject jSeq = new JObject();
+      jSeq.Add(new JProperty("Metadata", WriteMetadata(seq.Metadata)));
+      jSeq.Add(new JProperty("Gallery", WriteGallery(seq.Gallery)));
       jSeq.Add(new JProperty("BackgroundColor", WriteColor(seq.BackgroundColor)));
-      jSeq.Add(new JProperty("HomePosition", WriteTransform(seq.HomePosition)));
-      jSeq.Add(new JProperty("TrackingOrigin", seq.TrackingOrigin));
-      jSeq.Add(new JProperty("AnimateOnStart", seq.AnimateOnStart));
+      jSeq.Add(new JProperty("DfeaultViewpoint", seq.DefaultViewpoint));
       jSeq.Add(new JProperty("RootLayer", WriteLayer(seq.RootLayer)));
       return jSeq;
+    }
+
+    private static JObject WriteMetadata(Metadata value)
+    {
+      JObject jObj = new JObject();
+
+      jObj.Add(new JProperty("Title", value.Title));
+      jObj.Add(new JProperty("Description", value.Description));
+      
+      return jObj;
+    }
+
+    private static JObject WriteGallery(Gallery value)
+    {
+      JObject jObj = new JObject();
+
+      if (value.Pictures.Count == 0)
+      {
+        jObj.Add(new JProperty("Thumbnails", new JObject()));
+        jObj.Add(new JProperty("Pictures", new JArray()));
+      }
+      else
+      {
+        throw new NotImplementedException();
+      }
+      
+      return jObj;
     }
 
     private static JObject WriteLayer(Layer layer)
@@ -69,15 +96,11 @@ namespace SharpQuill
       jLayer.Add(new JProperty("BBoxVisible", layer.BBoxVisible));
       jLayer.Add(new JProperty("Opacity", layer.Opacity));
       jLayer.Add(new JProperty("Type", layer.Type.ToString()));
-      jLayer.Add(new JProperty("IsAnimationCycle", layer.IsAnimationCycle));
-      jLayer.Add(new JProperty("AnimationCycleRepeat", layer.AnimationCycleRepeat));
-
+      jLayer.Add(new JProperty("IsModelTopLayer", layer.IsModelTopLayer));
       jLayer.Add(new JProperty("KeepAlive", WriteKeepAlive(layer.KeepAlive)));
-      jLayer.Add(new JProperty("Animation", WriteAnimation(layer.Animation)));
-      jLayer.Add(new JProperty("AnimOffset", layer.AnimOffset));
-      
       jLayer.Add(new JProperty("Transform", WriteTransform(layer.Transform)));
       jLayer.Add(new JProperty("Pivot", WriteTransform(layer.Pivot)));
+      jLayer.Add(new JProperty("Animation", WriteAnimation(layer.Animation)));
       jLayer.Add(new JProperty("Implementation", WriteLayerImplementation(layer.Implementation, layer.Type)));
       return jLayer;
     }
@@ -94,6 +117,10 @@ namespace SharpQuill
           return WriteLayerImplementationPicture(impl as LayerImplementationPicture);
         case LayerType.Sound:
           return WriteLayerImplementationSound(impl as LayerImplementationSound);
+        case LayerType.Viewpoint:
+          throw new NotImplementedException();
+        case LayerType.Model:
+          throw new NotImplementedException();
         default:
           return null;
       }
@@ -138,8 +165,9 @@ namespace SharpQuill
     {
       JObject jLayer = new JObject();
 
-      jLayer.Add(new JProperty("Mode", impl.Mode.ToString()));
-      jLayer.Add(new JProperty("DataFile", impl.Filename));
+      throw new NotImplementedException();
+      //jLayer.Add(new JProperty("Mode", impl.Mode.ToString()));
+      //jLayer.Add(new JProperty("DataFile", impl.Filename));
 
       return jLayer;
     }
@@ -148,15 +176,16 @@ namespace SharpQuill
     {
       JObject jLayer = new JObject();
 
-      jLayer.Add(new JProperty("Duration", impl.Duration));
-      jLayer.Add(new JProperty("Volume", impl.Volume));
-      jLayer.Add(new JProperty("AttenMode", impl.AttenMode));
-      jLayer.Add(new JProperty("AttenMin", impl.AttenMin));
-      jLayer.Add(new JProperty("AttenMax", impl.AttenMax));
-      jLayer.Add(new JProperty("Loop", impl.Loop));
-      jLayer.Add(new JProperty("IsSpatialized", impl.IsSpatialized));
-      jLayer.Add(new JProperty("Play", impl.Play));
-      jLayer.Add(new JProperty("File", impl.Filename));
+      throw new NotImplementedException();
+      //jLayer.Add(new JProperty("Duration", impl.Duration));
+      //jLayer.Add(new JProperty("Volume", impl.Volume));
+      //jLayer.Add(new JProperty("AttenMode", impl.AttenMode));
+      //jLayer.Add(new JProperty("AttenMin", impl.AttenMin));
+      //jLayer.Add(new JProperty("AttenMax", impl.AttenMax));
+      //jLayer.Add(new JProperty("Loop", impl.Loop));
+      //jLayer.Add(new JProperty("IsSpatialized", impl.IsSpatialized));
+      //jLayer.Add(new JProperty("Play", impl.Play));
+      //jLayer.Add(new JProperty("File", impl.Filename));
 
       return jLayer;
     }
@@ -166,15 +195,26 @@ namespace SharpQuill
       return new JArray(value.R, value.G, value.B);
     }
 
-    private static JArray WriteTransform(Transform value)
+    private static JArray WriteVector3(Vector3 value)
     {
-      return new JArray(value.data);
+      return new JArray(value.X, value.Y, value.Z);
+    }
 
-      /*JArray output = new JArray();
-      foreach (float entry in value.data)
-        output.Add(entry);
+    private static JArray WriteVector4(Vector4 value)
+    {
+      return new JArray(value.X, value.Y, value.Z, value.W);
+    }
 
-      return output;*/
+    private static JObject WriteTransform(Transform value)
+    {
+      JObject jT = new JObject();
+
+      jT.Add(new JProperty("Rotation", WriteVector4(value.Rotation)));
+      jT.Add(new JProperty("Scale", value.Scale));
+      jT.Add(new JProperty("Flip", value.Flip));
+      jT.Add(new JProperty("Translation", WriteVector3(value.Translation)));
+
+      return jT;
     }
 
     private static JArray WriteBoundingBox(BoundingBox value)
@@ -195,10 +235,62 @@ namespace SharpQuill
     {
       JObject jAnimation = new JObject();
 
-      jAnimation.Add(new JProperty("Frames", new JArray(value.Frames)));
-      jAnimation.Add(new JProperty("Spans", new JArray(value.Spans)));
+      jAnimation.Add(new JProperty("Duration", value.Duration));
+      jAnimation.Add(new JProperty("Timeline", value.Timeline));
+      jAnimation.Add(new JProperty("StartOffset", value.StartOffset));
+      jAnimation.Add(new JProperty("MaxRepeatCount", value.MaxRepeatCount));
 
+      if (value.Keys == null || value.Keys.Visibility.Count == 0)
+      {
+        jAnimation.Add(new JProperty("Keys", new JObject()));
+      }
+      else
+      {
+        throw new NotImplementedException();
+      }
+      
       return jAnimation;
+    }
+
+    private static JObject WriteKeyframes(Keyframes value)
+    {
+      JObject jKeyframes = new JObject();
+
+      JArray jVisibility = new JArray();
+      foreach (KeyframeBool kf in value.Visibility)
+        jVisibility.Add(WriteKeyframeBool(kf));
+
+      jKeyframes.Add(new JProperty("Visibility", jVisibility));
+
+      JArray jOpacity = new JArray();
+      foreach (KeyframeFloat kf in value.Opacity)
+        jOpacity.Add(WriteKeyframeFloat(kf));
+      
+      jKeyframes.Add(new JProperty("Opacity", jOpacity));
+
+      return jKeyframes;
+    }
+
+    private static JObject WriteKeyframeBool(KeyframeBool value)
+    {
+      JObject jK = new JObject();
+
+      jK.Add(new JProperty("Time", value.Time));
+      jK.Add(new JProperty("Value", value.Value));
+      jK.Add(new JProperty("Interpolation", value.Interpolation.ToString()));
+
+      return jK;
+    }
+
+    private static JObject WriteKeyframeFloat(KeyframeFloat value)
+    {
+      JObject jK = new JObject();
+
+      jK.Add(new JProperty("Time", value.Time));
+      jK.Add(new JProperty("Value", value.Value));
+      jK.Add(new JProperty("Interpolation", value.Interpolation.ToString()));
+
+      return jK;
     }
 
     private static JObject WriteDrawing(Drawing drawing)

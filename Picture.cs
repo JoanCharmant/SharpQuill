@@ -6,9 +6,11 @@ using System.Threading.Tasks;
 
 namespace SharpQuill
 {
-  public enum PictureMode
+  // Used for the Gallery.
+  public class Picture
   {
-    Picture,
-    Unknown
+    public PictureType Type;
+    public long DataFileOffset;
+    public PictureMetadata Metadata;
   }
 }

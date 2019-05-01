@@ -8,14 +8,12 @@ namespace SharpQuill
 {
   public class LayerImplementationSound : LayerImplementation
   {
-    public float Duration;
-    public float Volume;
-    public int AttenMode;
-    public float AttenMin;
-    public float AttenMax;
+    public long DataFileOffset;
+    public string ImportFilePath;
+    public SoundType Type;
+    public float Gain;
     public bool Loop;
-    public bool IsSpatialized;
-    public bool Play;
-    public string Filename;
+    public SoundAttenuation Attenuation;
+    public List<SoundModifier> Modifiers;
   }
 }

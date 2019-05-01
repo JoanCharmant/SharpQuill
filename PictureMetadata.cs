@@ -6,14 +6,9 @@ using System.Threading.Tasks;
 
 namespace SharpQuill
 {
-  public enum LayerType
+  public class PictureMetadata
   {
-    Group,
-    Paint,
-    Sound,
-    Picture,
-    Viewpoint,
-    Model,
-    Unknown
+    public float VerticalFOV;
+    public float HorizontalFOV;
   }
 }

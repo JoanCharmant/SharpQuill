@@ -6,14 +6,9 @@ using System.Threading.Tasks;
 
 namespace SharpQuill
 {
-  public enum LayerType
+  public class Gallery
   {
-    Group,
-    Paint,
-    Sound,
-    Picture,
-    Viewpoint,
-    Model,
-    Unknown
+    public Thumbnails Thumbnails;
+    public List<Picture> Pictures = new List<Picture>();
   }
 }

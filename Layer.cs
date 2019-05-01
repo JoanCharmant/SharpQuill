@@ -15,13 +15,11 @@ namespace SharpQuill
     public bool BBoxVisible;
     public float Opacity;
     public LayerType Type;
-    public bool IsAnimationCycle;
-    public int AnimationCycleRepeat;
+    public bool IsModelTopLayer;
     public KeepAlive KeepAlive;
-    public Animation Animation;
-    public double AnimOffset;
     public Transform Transform;
     public Transform Pivot;
+    public Animation Animation;
     public LayerImplementation Implementation;
   }
 }

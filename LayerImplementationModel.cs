@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace SharpQuill
 {
-  public class LayerImplementationPicture : LayerImplementation
+  public class LayerImplementationModel
   {
-    public PictureType Type;
-    public bool ViewerLocked;
     public long DataFileOffset;
     public string ImportFilePath;
+    public ModelShadingModel ShadingModel;
+    public bool RenderWireFrame;
   }
 }
