@@ -246,7 +246,7 @@ namespace SharpQuill
       }
       else
       {
-        throw new NotImplementedException();
+        jAnimation.Add(new JProperty("Keys", WriteKeyframes(value.Keys)));
       }
       
       return jAnimation;
