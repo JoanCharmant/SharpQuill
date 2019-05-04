@@ -174,6 +174,9 @@ namespace SharpQuill
     {
       Keyframes keyframes = new Keyframes();
 
+      if (kkff == null || kkff.Visibility == null)
+        return keyframes;
+
       foreach (var kf in kkff.Visibility)
         keyframes.Visibility.Add(ParseKeyframeBool(kf));
 
