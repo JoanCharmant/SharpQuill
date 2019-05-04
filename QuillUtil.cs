@@ -81,58 +81,48 @@ namespace SharpQuill
       impl.Frames.Add(0);
 
       drawing.Data = new DrawingData();
-      UpdateBoundingBox(drawing);
+      ComputeBoundingBox(drawing);
 
       layer.Implementation = impl;
       
       return layer;
     }
-
-    public static void UpdateBoundingBox(Stroke stroke, Vertex v)
+    
+    public static void ComputeBoundingBox(Stroke stroke)
     {
-      stroke.BoundingBox.MinX = Math.Min(stroke.BoundingBox.MinX, v.Position.X);
-      stroke.BoundingBox.MinY = Math.Min(stroke.BoundingBox.MinY, v.Position.Y);
-      stroke.BoundingBox.MinZ = Math.Min(stroke.BoundingBox.MinZ, v.Position.Z);
-      stroke.BoundingBox.MaxX = Math.Max(stroke.BoundingBox.MaxX, v.Position.X);
-      stroke.BoundingBox.MaxY = Math.Max(stroke.BoundingBox.MaxY, v.Position.Y);
-      stroke.BoundingBox.MaxZ = Math.Max(stroke.BoundingBox.MaxZ, v.Position.Z);
-    }
-
-    public static void UpdateBoundingBox(Stroke stroke)
-    {
+      BoundingBox bbox = new BoundingBox();
+      bbox.Reset();
       foreach (Vertex v in stroke.Vertices)
-        UpdateBoundingBox(stroke, v);
+        bbox = BoundingBox.Extend(bbox, v.Position);
+
+      stroke.BoundingBox = bbox;
     }
 
-    public static void UpdateBoundingBox(Drawing drawing)
+    /// <summary>
+    /// Set the bounding box of the drawing. Assumes the bboxes of all individual strokes have already been computed.
+    /// </summary>
+    public static void ComputeBoundingBox(Drawing drawing)
     {
-      float max = 1.0e+20f;
-      float min = -1.0e+20f;
-      List<float> values = new List<float>() { max, min, max, min, max, min };
-      BoundingBox bbox = new BoundingBox(values);
-
+      BoundingBox bbox = new BoundingBox();
+      bbox.Reset();
       foreach (Stroke s in drawing.Data.Strokes)
-        bbox = ConsolidateBoundingBox(bbox, s.BoundingBox);
+        bbox = BoundingBox.Extend(bbox, s.BoundingBox);
 
       drawing.BoundingBox = bbox;
     }
 
-    public static void UpdateBoundingBox(LayerImplementationPaint impl)
-    {
-      foreach (Drawing drawing in impl.Drawings)
-        UpdateBoundingBox(drawing);
-    }
-
-    private static BoundingBox ConsolidateBoundingBox(BoundingBox a, BoundingBox b)
-    {
-      a.MinX = Math.Min(a.MinX, b.MinX);
-      a.MinY = Math.Min(a.MinY, b.MinY);
-      a.MinZ = Math.Min(a.MinZ, b.MinZ);
-      a.MaxX = Math.Max(a.MaxX, b.MaxX);
-      a.MaxY = Math.Max(a.MaxY, b.MaxY);
-      a.MaxZ = Math.Max(a.MaxZ, b.MaxZ);
-      return a;
-    }
+    /// <summary>
+    /// Set the bounding box of the layer. Assumes the bboxes of all individual drawings have already been computed.
+    /// </summary>
+    //public static void ComputeBoundingBox(LayerImplementationPaint impl)
+    //{
+    //  BoundingBox bbox = new BoundingBox();
+    //  bbox.Reset();
+    //  foreach (Drawing drawing in impl.Drawings)
+    //    ConsolidateBoundingBox(bbox, drawing.BoundingBox);
+    //  impl.
+    //}
+    
 
 
     /// <summary>
