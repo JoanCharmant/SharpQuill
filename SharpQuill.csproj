@@ -80,7 +80,6 @@
     <Compile Include="LayerImplementationPicture.cs" />
     <Compile Include="LayerImplementationSound.cs" />
     <Compile Include="LayerImplementationGroup.cs" />
-    <Compile Include="LayerImplementationPaint13.cs" />
     <Compile Include="LayerImplementationViewpoint.cs" />
     <Compile Include="LayerType.cs" />
     <Compile Include="Gallery.cs" />
