@@ -199,6 +199,14 @@ namespace SharpQuill
     public static Layer FindLayer(Sequence seq, string path)
     {
       Layer parent = seq.RootLayer;
+      return FindLayer(parent, path);
+    }
+
+    /// <summary>
+    /// Finds a layer at the specified path. Does not create the groups along the way.
+    /// </summary>
+    public static Layer FindLayer(Layer parent, string path)
+    {
       string[] nodes = path.Split(new string[] { "/", "\\" }, StringSplitOptions.RemoveEmptyEntries);
 
       for (int i = 0; i < nodes.Length; i++)
