@@ -9,7 +9,7 @@ namespace SharpQuill
 {
   public static class QuillUtil
   {
-    public static Sequence CreateDefaultSequence(bool createDefaultPaintLayer)
+    public static Sequence CreateDefaultSequence()
     {
       Sequence seq = new Sequence();
       seq.Metadata = new Metadata();
@@ -17,10 +17,7 @@ namespace SharpQuill
       seq.BackgroundColor = new Color(0.8f, 0.8f, 0.8f);
       seq.DefaultViewpoint = "Root/InitialSpawnArea";
       Layer root = CreateDefaultGroup("Root");
-
-      if (createDefaultPaintLayer)
-        ((LayerImplementationGroup)root.Implementation).Children.Add(CreateDefaultPaint());
-
+      
       seq.RootLayer = root;
       seq.LastStrokeId = 0;
       return seq;
