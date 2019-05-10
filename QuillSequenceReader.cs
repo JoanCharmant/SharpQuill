@@ -54,7 +54,10 @@ namespace SharpQuill
       seq.Metadata = ParseMetadata(s.Sequence.Metadata);
       seq.Gallery = ParseGallery(s.Sequence.Gallery);
       seq.BackgroundColor = ParseColor(s.Sequence.BackgroundColor);
-      seq.DefaultViewpoint = s.Sequence.DefaultViewpoint.ToObject(typeof(string));
+      if (s.Sequence.DefaultViewpoint != null)
+        seq.DefaultViewpoint = s.Sequence.DefaultViewpoint.ToObject(typeof(string));
+      else
+        seq.DefaultViewpoint = ""; // "Root/InitialSpawnArea"
       seq.RootLayer = ParseLayer(s.Sequence.RootLayer);
       return seq;
     }
@@ -174,7 +177,7 @@ namespace SharpQuill
     {
       Keyframes keyframes = new Keyframes();
 
-      if (kkff == null || kkff.Visibility == null)
+      if (kkff == null || kkff.Visibility == null || kkff.Opacity == null)
         return keyframes;
 
       foreach (var kf in kkff.Visibility)
@@ -270,7 +273,7 @@ namespace SharpQuill
         }
         case LayerType.Picture:
           {
-            LayerImplementationPicture impl = new LayerImplementationPicture();
+            //LayerImplementationPicture impl = new LayerImplementationPicture();
             
 
 
@@ -284,7 +287,8 @@ namespace SharpQuill
           }
         case LayerType.Sound:
           {
-            LayerImplementationSound impl = new LayerImplementationSound();
+            
+            //LayerImplementationSound impl = new LayerImplementationSound();
 
 
             //impl.Duration = li.Duration;
@@ -297,7 +301,7 @@ namespace SharpQuill
             //impl.Play = li.Play;
             //impl.Filename = li.Filename;
 
-            result = impl;
+            //result = impl;
             break;
           }
         case LayerType.Viewpoint:

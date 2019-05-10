@@ -114,13 +114,17 @@ namespace SharpQuill
         case LayerType.Paint:
           return WriteLayerImplementationPaint(impl as LayerImplementationPaint);
         case LayerType.Picture:
-          return WriteLayerImplementationPicture(impl as LayerImplementationPicture);
+          return null;
+          //return WriteLayerImplementationPicture(impl as LayerImplementationPicture);
         case LayerType.Sound:
-          return WriteLayerImplementationSound(impl as LayerImplementationSound);
+          return null;
+          //return WriteLayerImplementationSound(impl as LayerImplementationSound);
         case LayerType.Viewpoint:
-          throw new NotImplementedException();
+          return null;
+          //throw new NotImplementedException();
         case LayerType.Model:
-          throw new NotImplementedException();
+          return null;
+          //throw new NotImplementedException();
         default:
           return null;
       }
@@ -132,7 +136,10 @@ namespace SharpQuill
       JArray jChildren = new JArray();
 
       foreach (Layer child in impl.Children)
-        jChildren.Add(WriteLayer(child));
+      {
+        if (child != null && child.Type == LayerType.Group || child.Type == LayerType.Paint)
+          jChildren.Add(WriteLayer(child));
+      }
 
       jLayer.Add(new JProperty("Children", jChildren));
 
@@ -321,7 +328,10 @@ namespace SharpQuill
       if (layer.Type == LayerType.Group)
       {
         foreach (Layer l in ((LayerImplementationGroup)layer.Implementation).Children)
-          WriteDrawingData(l, qbinWriter);
+        {
+          if (l != null)
+            WriteDrawingData(l, qbinWriter);
+        }
       }
       else if (layer.Type == LayerType.Paint)
       {
