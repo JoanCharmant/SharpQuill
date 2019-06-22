@@ -137,7 +137,7 @@ namespace SharpQuill
 
       foreach (Layer child in impl.Children)
       {
-        if (child != null && child.Type == LayerType.Group || child.Type == LayerType.Paint)
+        if (child != null && (child.Type == LayerType.Group || child.Type == LayerType.Paint))
           jChildren.Add(WriteLayer(child));
       }
 
