@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SharpQuill
 {
-  public class LayerImplementationViewpoint
+  public class LayerImplementationViewpoint : LayerImplementation
   {
     public int Version;
     public Color Color;

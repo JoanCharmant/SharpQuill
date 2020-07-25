@@ -68,6 +68,8 @@ namespace SharpQuill
 
       metadata.Title = m.Title.ToObject(typeof(string));
       metadata.Description = m.Description.ToObject(typeof(string));
+      if (m.ThumbnailCropPosition != null)
+        metadata.ThumbnailCropPosition = m.ThumbnailCropPosition.ToObject(typeof(float));
       
       return metadata;
     }

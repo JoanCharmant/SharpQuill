@@ -10,11 +10,13 @@ namespace SharpQuill
   {
     public string Title;
     public string Description;
+    public float ThumbnailCropPosition;
 
     public Metadata()
     {
-      Title = "...";
-      Description = "...";
+      Title = "Untitled";
+      Description = "";
+      ThumbnailCropPosition = 0;
     }
   }
 }

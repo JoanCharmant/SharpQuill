@@ -17,7 +17,11 @@ namespace SharpQuill
       seq.BackgroundColor = new Color(0.8f, 0.8f, 0.8f);
       seq.DefaultViewpoint = "Root/InitialSpawnArea";
       Layer root = CreateDefaultGroup("Root");
-      
+      Layer spawn = CreateDefaultSpawnArea("InitialSpawnArea");
+
+      List<Layer> children = ((LayerImplementationGroup)root.Implementation).Children;
+      children.Add(spawn);
+
       seq.RootLayer = root;
       seq.LastStrokeId = 0;
       return seq;
@@ -85,6 +89,41 @@ namespace SharpQuill
       return layer;
     }
     
+    public static Layer CreateDefaultSpawnArea(string name = "InitialSpawnArea")
+    {
+      Layer layer = new Layer();
+      layer.Name = name;
+      layer.Visible = false;
+      layer.Locked = false;
+      layer.Collapsed = false;
+      layer.BBoxVisible = false;
+      layer.Opacity = 1.0f;
+      layer.Type = LayerType.Viewpoint;
+      layer.IsModelTopLayer = false;
+      layer.KeepAlive = new KeepAlive();
+      layer.KeepAlive.Type = KeepAliveType.None;
+      layer.Transform = new Transform();
+      layer.Pivot = new Transform();
+      layer.Animation = new Animation();
+      layer.Animation.Keys = new Keyframes();
+
+      LayerImplementationViewpoint impl = new LayerImplementationViewpoint();
+
+      impl.Version = 1;
+      impl.Color = new Color(0.113542f, 0.409455f, 0.808914f);
+      impl.Sphere = new Vector4(0, 1, 0, 2);
+      impl.AllowTranslationX = true;
+      impl.AllowTranslationY = true;
+      impl.AllowTranslationZ = true;
+      impl.Exporting = true;
+      impl.ShowingVolume = false;
+      impl.TypeStr = "FloorLevel";
+
+      layer.Implementation = impl;
+
+      return layer;
+    }
+
     public static void ComputeBoundingBox(Stroke stroke)
     {
       BoundingBox bbox = new BoundingBox();

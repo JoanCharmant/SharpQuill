@@ -53,7 +53,7 @@ namespace SharpQuill
       jSeq.Add(new JProperty("Metadata", WriteMetadata(seq.Metadata)));
       jSeq.Add(new JProperty("Gallery", WriteGallery(seq.Gallery)));
       jSeq.Add(new JProperty("BackgroundColor", WriteColor(seq.BackgroundColor)));
-      jSeq.Add(new JProperty("DfeaultViewpoint", seq.DefaultViewpoint));
+      jSeq.Add(new JProperty("DefaultViewpoint", seq.DefaultViewpoint));
       jSeq.Add(new JProperty("RootLayer", WriteLayer(seq.RootLayer)));
       return jSeq;
     }
@@ -64,6 +64,7 @@ namespace SharpQuill
 
       jObj.Add(new JProperty("Title", value.Title));
       jObj.Add(new JProperty("Description", value.Description));
+      jObj.Add(new JProperty("ThumbnailCropPosition", value.ThumbnailCropPosition));
       
       return jObj;
     }
