@@ -18,18 +18,18 @@ namespace SharpQuill
     public static Sequence Read(string path)
     {
       if (string.IsNullOrEmpty(path))
-        throw new InvalidOperationException();
+        return null;
 
       if (!Directory.Exists(path))
-        throw new InvalidOperationException();
+        return null;
 
       string sequenceFilename = Path.Combine(path, "Quill.json");
       if (!File.Exists(sequenceFilename))
-        throw new InvalidOperationException();
+        return null;
 
       string paintDataFilename = Path.Combine(path, "Quill.qbin");
       if (!File.Exists(paintDataFilename))
-        throw new InvalidOperationException();
+        return null;
 
       string json = File.ReadAllText(sequenceFilename);
       dynamic document = JsonConvert.DeserializeObject(json);
