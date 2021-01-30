@@ -176,11 +176,7 @@ namespace SharpQuill
     private static KeepAlive ParseKeepAlive(dynamic ka)
     {
       KeepAlive keepAlive = new KeepAlive();
-
-      KeepAliveType keepAliveType;
-      bool parsed = Enum.TryParse((string)ka.Type.ToObject(typeof(string)), out keepAliveType);
-      keepAlive.Type = parsed ? keepAliveType : KeepAliveType.None;
-      
+      keepAlive.Type = ParseEnum<KeepAliveType>(ka.Type);
       return keepAlive;
     }
 
@@ -270,10 +266,7 @@ namespace SharpQuill
       layer.Collapsed = l.Collapsed;
       layer.BBoxVisible = l.BBoxVisible;
       layer.Opacity = l.Opacity;
-
-      bool parsed = Enum.TryParse((string)l.Type.ToObject(typeof(string)), out LayerType layerType);
-      layer.Type = parsed ? layerType : LayerType.Unknown;
-
+      layer.Type = ParseEnum<LayerType>(l.Type);
       layer.IsModelTopLayer = l.IsModelTopLayer;
       layer.KeepAlive = ParseKeepAlive(l.KeepAlive);
       layer.Transform = ParseTransform(l.Transform);
