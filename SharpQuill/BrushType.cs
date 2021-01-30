@@ -10,12 +10,11 @@ namespace SharpQuill
   /// Brush types.
   /// The "capped" versions of the brushes are made by setting the start and end vertices width to zero.
   /// </summary>
-  public enum BrushType
+  public enum BrushType : short
   {
-    Cylinder, 
-    Ellipse,
-    Ribbon, 
-    Cube,
-    Line, 
+    Ribbon = 1, 
+    Cylinder = 2, 
+    Ellipse = 3,
+    Cube = 4,
   }
 }

@@ -31,7 +31,7 @@ namespace SharpQuill
     /// <summary>
     /// The type of brush used for this stroke.
     /// </summary>
-    public BrushType BrushType { get; set; } = BrushType.Ellipse;
+    public BrushType BrushType { get; set; } = BrushType.Cylinder;
 
     /// <summary>
     /// Whether rotational opacity is enabled on this stroke.

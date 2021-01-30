@@ -17,6 +17,9 @@ namespace SharpQuill
 		{
     }
 
+    /// <summary>
+    /// Reads the paint stroke data for one drawing.
+    /// </summary>
     public DrawingData ReadDrawingData()
     {
       DrawingData pl = new DrawingData();
@@ -37,7 +40,7 @@ namespace SharpQuill
       stroke.u2 = ReadInt32();
       stroke.BoundingBox = ReadBoundingBox();
       short brushType = ReadInt16();
-      stroke.BrushType = (BrushType)brushType;
+      stroke.BrushType = (Enum.IsDefined(typeof(BrushType), brushType)) ? (BrushType)brushType : BrushType.Cylinder;
       stroke.DisableRotationalOpacity = ReadBoolean();
       stroke.u3 = ReadByte();
       int count = ReadInt32();

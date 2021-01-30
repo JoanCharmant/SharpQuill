@@ -12,7 +12,7 @@ namespace SharpQuill
 {
   /// <summary>
   /// A QuillSequenceReader reads a quill project folder and imports it in a Sequence object.
-  /// A project consist in a json manifest and binary data.
+  /// A project consists in a json-based scene hierarchy, a json-based state file, and binary data.
   /// </summary>
   public static class QuillSequenceReader
   {
