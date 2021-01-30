@@ -2,18 +2,14 @@
 
 namespace SharpQuill
 {
+  /// <summary>
+  /// Represents an RGB color.
+  /// </summary>
   public struct Color
   {
     public float R;
     public float G;
     public float B;
-
-    public Color(List<float> value)
-    {
-      R = value[0];
-      G = value[1];
-      B = value[2];
-    }
 
     public Color(float r, float g, float b)
     {
@@ -21,5 +17,20 @@ namespace SharpQuill
       G = g;
       B = b;
     }
+
+    /// <summary>
+    /// Construct a color from a list of floats interpreted as [R, G, B].
+    /// </summary>
+    public Color(List<float> value)
+      : this()
+    {
+      if (value.Count != 3)
+        return;
+
+      R = value[0];
+      G = value[1];
+      B = value[2];
+    }
+
   }
 }

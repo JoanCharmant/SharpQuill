@@ -7,17 +7,39 @@ using System.Threading.Tasks;
 
 namespace SharpQuill
 {
+  /// <summary>
+  /// Axis-aligned bounding box.
+  /// </summary>
   public struct BoundingBox
   {
+    public const float HUGE = 1.0e+20f;
+
     public float MinX;
     public float MaxX;
     public float MinY;
     public float MaxY;
     public float MinZ;
     public float MaxZ;
-    
-    public BoundingBox(List<float> value)
+
+    public BoundingBox(float minX, float maxX, float minY, float maxY, float minZ, float maxZ)
     {
+      this.MinX = minX;
+      this.MaxX = maxX;
+      this.MinY = minY;
+      this.MaxY = maxY;
+      this.MinZ = minZ;
+      this.MaxZ = maxZ;
+    }
+
+    /// <summary>
+    /// Construct a bounding box from a list of floats interpreted as [minX, maxX, minY, maxY, minZ, maxZ].
+    /// </summary>
+    public BoundingBox(List<float> value)
+      : this()
+    {
+      if (value.Count != 6)
+        return;
+
       MinX = value[0];
       MaxX = value[1];
       MinY = value[2];
@@ -32,37 +54,47 @@ namespace SharpQuill
         MinX, MaxX, MinY, MaxY, MinZ, MaxZ);
     }
 
+    /// <summary>
+    /// Resets the bounding box to a reverted box.
+    /// </summary>
     public void Reset()
     {
-      MinX = MinY = MinZ = 1.0e+20f;
-      MaxX = MaxY = MaxZ = -1.0e+20f; 
+      MinX = MinY = MinZ = HUGE;
+      MaxX = MaxY = MaxZ = -HUGE; 
     }
 
+    /// <summary>
+    /// Returns the center of the bounding box.
+    /// </summary>
     public Vector3 Center()
     {
       return new Vector3(MinX + (MaxX - MinX)/2, MinY + (MaxY - MinY)/2, MinZ + (MaxZ - MinZ)/2);
     }
 
-    public static BoundingBox Extend(BoundingBox a, BoundingBox b)
+    /// <summary>
+    /// Expand the bounding box so that it also contains the passed one.
+    /// </summary>
+    public void Expand(BoundingBox b)
     {
-      a.MinX = Math.Min(a.MinX, b.MinX);
-      a.MinY = Math.Min(a.MinY, b.MinY);
-      a.MinZ = Math.Min(a.MinZ, b.MinZ);
-      a.MaxX = Math.Max(a.MaxX, b.MaxX);
-      a.MaxY = Math.Max(a.MaxY, b.MaxY);
-      a.MaxZ = Math.Max(a.MaxZ, b.MaxZ);
-      return a;
+      MinX = Math.Min(MinX, b.MinX);
+      MinY = Math.Min(MinY, b.MinY);
+      MinZ = Math.Min(MinZ, b.MinZ);
+      MaxX = Math.Max(MaxX, b.MaxX);
+      MaxY = Math.Max(MaxY, b.MaxY);
+      MaxZ = Math.Max(MaxZ, b.MaxZ);
     }
 
-    public static BoundingBox Extend(BoundingBox a, Vector3 v)
+    /// <summary>
+    /// Expand the bounding box so that it also contains the passed vector.
+    /// </summary>
+    public void Expand(Vector3 v)
     {
-      a.MinX = Math.Min(a.MinX, v.X);
-      a.MinY = Math.Min(a.MinY, v.Y);
-      a.MinZ = Math.Min(a.MinZ, v.Z);
-      a.MaxX = Math.Max(a.MaxX, v.X);
-      a.MaxY = Math.Max(a.MaxY, v.Y);
-      a.MaxZ = Math.Max(a.MaxZ, v.Z);
-      return a;
+      MinX = Math.Min(MinX, v.X);
+      MinY = Math.Min(MinY, v.Y);
+      MinZ = Math.Min(MinZ, v.Z);
+      MaxX = Math.Max(MaxX, v.X);
+      MaxY = Math.Max(MaxY, v.Y);
+      MaxZ = Math.Max(MaxZ, v.Z);
     }
   }
 }

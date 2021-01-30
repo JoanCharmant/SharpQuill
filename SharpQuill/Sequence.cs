@@ -6,17 +6,16 @@ using System.Threading.Tasks;
 
 namespace SharpQuill
 {
+  /// <summary>
+  /// Represents the top level object in the scene.
+  /// </summary>
   public class Sequence
   {
-    public Metadata Metadata;
-    public Gallery Gallery;
-    public Color BackgroundColor;
-    public string DefaultViewpoint;
-    public Layer RootLayer;
-    public UInt32 LastStrokeId;
-    
-    public Sequence()
-    {
-    }
+    public Metadata Metadata { get; set; }
+    public Gallery Gallery { get; set; }
+    public Color BackgroundColor { get; set; }
+    public string DefaultViewpoint { get; set; }
+    public Layer RootLayer { get; set; }
+    public UInt32 LastStrokeId { get; set; }
   }
 }

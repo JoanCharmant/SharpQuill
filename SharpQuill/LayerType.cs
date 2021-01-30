@@ -6,14 +6,44 @@ using System.Threading.Tasks;
 
 namespace SharpQuill
 {
+  /// <summary>
+  /// Enumerates layer types.
+  /// </summary>
   public enum LayerType
   {
+    /// <summary>
+    /// A group layer contains other layers.
+    /// </summary>
     Group,
+
+    /// <summary>
+    /// A paint layer contains paint strokes.
+    /// </summary>
     Paint,
+
+    /// <summary>
+    /// A sound layer contains an audio file.
+    /// </summary>
     Sound,
+
+    /// <summary>
+    /// A picture layer contains an image file.
+    /// </summary>
     Picture,
+
+    /// <summary>
+    /// A viewpoint layer contains a viewpoint.
+    /// </summary>
     Viewpoint,
+
+    /// <summary>
+    /// A model layer contains a mesh.
+    /// </summary>
     Model,
+
+    /// <summary>
+    /// Unknown layer type.
+    /// </summary>
     Unknown
   }
 }

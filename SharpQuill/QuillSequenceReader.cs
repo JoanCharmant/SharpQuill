@@ -11,7 +11,8 @@ using System.Threading.Tasks;
 namespace SharpQuill
 {
   /// <summary>
-  /// Reads a quill project: JSON manifest and binary paint data.
+  /// A QuillSequenceReader reads a quill project folder and imports it in a Sequence object.
+  /// A project consist in a json manifest and binary data.
   /// </summary>
   public static class QuillSequenceReader
   {
@@ -35,15 +36,13 @@ namespace SharpQuill
       dynamic document = JsonConvert.DeserializeObject(json);
       Sequence seq = Parse(document);
 
-      // Read all the paint data.
-      Stream stream = File.OpenRead(paintDataFilename);
-      QBinReader qbinReader = new QBinReader(stream);
-      seq.LastStrokeId = qbinReader.ReadUInt32();
-
-      // TODO: keep a global list of layer data.
-      // If two layers point to the same offset only load it once in memory.
-      ReadPaintLayerData(seq.RootLayer, qbinReader);
-      qbinReader.Close();
+      // Now that we have loaded the entire hierarchy, read the actual attached data from the qbin.
+      using (Stream stream = File.OpenRead(paintDataFilename))
+      {
+        QBinReader qbinReader = new QBinReader(stream);
+        seq.LastStrokeId = qbinReader.ReadUInt32();
+        ReadLayerData(seq.RootLayer, qbinReader);
+      }
 
       return seq;
     }
@@ -116,11 +115,21 @@ namespace SharpQuill
       return new Vector4(value);
     }
 
+    private static Quaternion ParseQuaternion(JArray jValue)
+    {
+      List<float> value = jValue.ToObject<List<float>>();
+
+      if (value.Count != 4)
+        throw new InvalidDataException();
+
+      return new Quaternion(value);
+    }
+
     private static Transform ParseTransform(dynamic t)
     {
-      Transform transform = new Transform();
+      Transform transform = Transform.Identity;
 
-      transform.Rotation = ParseVector4(t.Rotation);
+      transform.Rotation = ParseQuaternion(t.Rotation);
       transform.Scale = t.Scale;
       transform.Flip = t.Flip;
       transform.Translation = ParseVector3(t.Translation);
@@ -321,18 +330,19 @@ namespace SharpQuill
       return result;
     }
 
-    private static void ReadPaintLayerData(Layer layer, QBinReader qbinReader)
+    /// <summary>
+    /// Recursive function reading binary data for the entire hierarchy.
+    /// </summary>
+    private static void ReadLayerData(Layer layer, QBinReader qbinReader)
     {
-      // Recursive function reading paint data for the entire hierarchy.
       if (layer.Type == LayerType.Group)
       {
         foreach (Layer l in ((LayerImplementationGroup)layer.Implementation).Children)
-          ReadPaintLayerData(l, qbinReader);
+          ReadLayerData(l, qbinReader);
       }
       else if (layer.Type == LayerType.Paint)
       {
         LayerImplementationPaint lip = layer.Implementation as LayerImplementationPaint;
-
         foreach (Drawing drawing in lip.Drawings)
         {
           qbinReader.BaseStream.Seek(drawing.DataFileOffset, SeekOrigin.Begin);

@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace SharpQuill
 {
+  /// <summary>
+  /// Binary writer for qbin files.
+  /// </summary>
   public class QBinWriter : BinaryWriter
   {
     public QBinWriter(Stream stream)
@@ -48,7 +51,7 @@ namespace SharpQuill
     {
       Write(vertex.Position);
       Write(vertex.Normal);
-      Write(vertex.Tangeant);
+      Write(vertex.Tangent);
       Write(vertex.Color);
       Write(vertex.Opacity);
       Write(vertex.Width);

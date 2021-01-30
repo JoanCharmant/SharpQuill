@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SharpQuill
 {
-  public enum ModelShadingModel
+  public enum ModelShadingMode
   {
     Unlit,
   }

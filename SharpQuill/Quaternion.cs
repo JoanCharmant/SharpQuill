@@ -7,16 +7,16 @@ using System.Threading.Tasks;
 namespace SharpQuill
 {
   /// <summary>
-  /// A 4D vector.
+  /// A 4D vector representing a rotation.
   /// </summary>
-  public struct Vector4
+  public struct Quaternion
   {
     public float X;
     public float Y;
     public float Z;
     public float W;
 
-    public Vector4(float x, float y, float z, float w)
+    public Quaternion(float x, float y, float z, float w)
     {
       X = x;
       Y = y;
@@ -25,9 +25,9 @@ namespace SharpQuill
     }
 
     /// <summary>
-    /// Construct a vector4 from a list of floats interpreted as [X, Y, Z, W].
+    /// Construct a quaternion from a list of floats interpreted as [X, Y, Z, W].
     /// </summary>
-    public Vector4(List<float> value)
+    public Quaternion(List<float> value)
       : this()
     {
       if (value.Count != 4)

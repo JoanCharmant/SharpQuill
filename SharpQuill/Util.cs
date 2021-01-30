@@ -7,7 +7,10 @@ using System.Threading.Tasks;
 
 namespace SharpQuill
 {
-  public static class QuillUtil
+  /// <summary>
+  /// Helper methods to create or manipulate the data object model.
+  /// </summary>
+  public static class Util
   {
     public static Sequence CreateDefaultSequence()
     {
@@ -40,8 +43,8 @@ namespace SharpQuill
       layer.IsModelTopLayer = false;
       layer.KeepAlive = new KeepAlive();
       layer.KeepAlive.Type = KeepAliveType.None;
-      layer.Transform = new Transform();
-      layer.Pivot = new Transform();
+      layer.Transform = Transform.Identity;
+      layer.Pivot = Transform.Identity;
       layer.Animation = new Animation();
       layer.Animation.Keys = new Keyframes();
 
@@ -51,7 +54,10 @@ namespace SharpQuill
 
       return layer;
     }
-    
+
+    /// <summary>
+    /// Creates a basic paint layer.
+    /// </summary>
     public static Layer CreateDefaultPaint(string name = "Paint")
     {
       Layer layer = new Layer();
@@ -65,24 +71,22 @@ namespace SharpQuill
       layer.IsModelTopLayer = false;
       layer.KeepAlive = new KeepAlive();
       layer.KeepAlive.Type = KeepAliveType.None;
-      layer.Transform = new Transform();
-      layer.Pivot = new Transform();
+      layer.Transform = Transform.Identity;
+      layer.Pivot = Transform.Identity;
       layer.Animation = new Animation();
       layer.Animation.Keys = new Keyframes();
       
       LayerImplementationPaint impl = new LayerImplementationPaint();
-      
       impl.Framerate = 24.0f;
       impl.MaxRepeatCount = 0;
       impl.Drawings = new List<Drawing>();
       impl.Frames = new List<float>();
 
       Drawing drawing = new Drawing();
+      drawing.Data = new DrawingData();
+      drawing.UpdateBoundingBox(true);
       impl.Drawings.Add(drawing);
       impl.Frames.Add(0);
-
-      drawing.Data = new DrawingData();
-      ComputeBoundingBox(drawing);
 
       layer.Implementation = impl;
       
@@ -102,8 +106,8 @@ namespace SharpQuill
       layer.IsModelTopLayer = false;
       layer.KeepAlive = new KeepAlive();
       layer.KeepAlive.Type = KeepAliveType.None;
-      layer.Transform = new Transform();
-      layer.Pivot = new Transform();
+      layer.Transform = Transform.Identity;
+      layer.Pivot = Transform.Identity;
       layer.Animation = new Animation();
       layer.Animation.Keys = new Keyframes();
 
@@ -124,47 +128,10 @@ namespace SharpQuill
       return layer;
     }
 
-    public static void ComputeBoundingBox(Stroke stroke)
-    {
-      BoundingBox bbox = new BoundingBox();
-      bbox.Reset();
-      foreach (Vertex v in stroke.Vertices)
-        bbox = BoundingBox.Extend(bbox, v.Position);
-
-      stroke.BoundingBox = bbox;
-    }
-
-    /// <summary>
-    /// Set the bounding box of the drawing. Assumes the bboxes of all individual strokes have already been computed.
-    /// </summary>
-    public static void ComputeBoundingBox(Drawing drawing)
-    {
-      BoundingBox bbox = new BoundingBox();
-      bbox.Reset();
-      foreach (Stroke s in drawing.Data.Strokes)
-        bbox = BoundingBox.Extend(bbox, s.BoundingBox);
-
-      drawing.BoundingBox = bbox;
-    }
-
-    /// <summary>
-    /// Set the bounding box of the layer. Assumes the bboxes of all individual drawings have already been computed.
-    /// </summary>
-    //public static void ComputeBoundingBox(LayerImplementationPaint impl)
-    //{
-    //  BoundingBox bbox = new BoundingBox();
-    //  bbox.Reset();
-    //  foreach (Drawing drawing in impl.Drawings)
-    //    ConsolidateBoundingBox(bbox, drawing.BoundingBox);
-    //  impl.
-    //}
-    
-
-
     /// <summary>
     /// Adds a new group layer at the specified path, creates all the groups along the way if necessary.
     /// The path should not contain the "Root" group, use a single "/" instead or nothing.
-    /// That is, to create a layer at Root/Main/Test, pass "/Main/Test".
+    /// For example, to create a layer at Root/Main/Test, call this with path="/Main/Test".
     /// </summary>
     public static Layer CreateGroupLayer(Sequence seq, string path)
     {
@@ -190,7 +157,7 @@ namespace SharpQuill
     /// <summary>
     /// Adds a new paint layer at the specified path, creates all the groups along the way if necessary.
     /// The path should not contain the "Root" group, use a single "/" instead or nothing.
-    /// That is, to create a layer at Root/Main/Test, pass "/Main/Test".
+    /// For example, to create a layer at Root/Main/Test, call this with path="/Main/Test".
     /// </summary>
     public static Layer CreatePaintLayer(Sequence seq, string path)
     {
@@ -223,17 +190,20 @@ namespace SharpQuill
 
     /// <summary>
     /// Adds a layer to a group.
+    /// If the group doesn't exist at the specified path it will be created.
     /// </summary>
+    /// <param name="seq">The sequence containing the group.</param>
+    /// <param name="path">The path of the group.</param>
+    /// <param name="layer">The layer to add to the group.</param>
     public static void Add(Sequence seq, string path, Layer layer)
     {
       Layer layerGroup = CreateGroupLayer(seq, path);
-
       List<Layer> children = ((LayerImplementationGroup)layerGroup.Implementation).Children;
       children.Add(layer);
     }
 
     /// <summary>
-    /// Finds a layer at the specified path. Does not create the groups along the way.
+    /// Finds a layer at the specified path. Does not create the groups along the way if not found.
     /// </summary>
     public static Layer FindLayer(Sequence seq, string path)
     {
@@ -242,7 +212,7 @@ namespace SharpQuill
     }
 
     /// <summary>
-    /// Finds a layer at the specified path. Does not create the groups along the way.
+    /// Finds a layer at the specified path. Does not create the groups along the way if not found.
     /// </summary>
     public static Layer FindLayer(Layer parent, string path)
     {
@@ -265,7 +235,7 @@ namespace SharpQuill
     }
 
     /// <summary>
-    /// Look for an immediate child matching the name.
+    /// Finds an immediate child layer matching the name.
     /// </summary>
     public static Layer FindChild(Layer parent, string name)
     {

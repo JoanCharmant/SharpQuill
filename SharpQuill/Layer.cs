@@ -6,20 +6,64 @@ using System.Threading.Tasks;
 
 namespace SharpQuill
 {
+  /// <summary>
+  /// A generic layer.
+  /// The data is contained in type specific implementation.
+  /// </summary>
   public class Layer
   {
-    public string Name;
-    public bool Visible;
-    public bool Locked;
-    public bool Collapsed;
-    public bool BBoxVisible;
-    public float Opacity;
-    public LayerType Type;
-    public bool IsModelTopLayer;
-    public KeepAlive KeepAlive;
-    public Transform Transform;
-    public Transform Pivot;
-    public Animation Animation;
-    public LayerImplementation Implementation;
+    /// <summary>
+    /// The name of the layer.
+    /// </summary>
+    public string Name { get; set; }
+    /// <summary>
+    /// Whether the layer is visible.
+    /// </summary>
+    public bool Visible { get; set; }
+    /// <summary>
+    /// Whether the layer is locked.
+    /// Locked layers cannot be modfied or expanded.
+    /// </summary>
+    public bool Locked { get; set; }
+    /// <summary>
+    /// Whether the layer is collapsed.
+    /// </summary>
+    public bool Collapsed { get; set; }
+
+    /// <summary>
+    /// Whether the bounding box of the layer is visible.
+    /// </summary>
+    public bool BBoxVisible { get; set; }
+
+    /// <summary>
+    /// Layer-specific opacity level.
+    /// </summary>
+    public float Opacity { get; set; }
+    /// <summary>
+    /// The type of the layer.
+    /// </summary>
+    public LayerType Type { get; set; }
+    /// <summary>
+    /// Whether this layer is the root of a model hierarchy.
+    /// </summary>
+    public bool IsModelTopLayer { get; set; }
+    public KeepAlive KeepAlive { get; set; }
+
+    /// <summary>
+    /// The local coordinate system in relation to the parent layer.
+    /// </summary>
+    public Transform Transform { get; set; } = Transform.Identity;
+
+    /// <summary>
+    /// The transform of the pivot for this layer.
+    /// </summary>
+    public Transform Pivot { get; set; } = Transform.Identity;
+
+    public Animation Animation { get; set; }
+
+    /// <summary>
+    /// The type-specific data for this layer.
+    /// </summary>
+    public LayerImplementation Implementation { get; set; }
   }
 }

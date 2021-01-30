@@ -8,9 +8,9 @@ namespace SharpQuill
 {
   public class LayerImplementationModel
   {
-    public long DataFileOffset;
-    public string ImportFilePath;
-    public ModelShadingModel ShadingModel;
-    public bool RenderWireFrame;
+    public long DataFileOffset { get; set; }
+    public string ImportFilePath { get; set; }
+    public ModelShadingMode ShadingModel { get; set; }
+    public bool RenderWireFrame { get; set; }
   }
 }

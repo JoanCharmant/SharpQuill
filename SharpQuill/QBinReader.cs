@@ -34,12 +34,9 @@ namespace SharpQuill
       Stroke stroke = new Stroke();
 
       stroke.Id = ReadUInt32();
-      
       stroke.u2 = ReadInt32();
       stroke.BoundingBox = ReadBoundingBox();
-
       short brushType = ReadInt16();
-
       stroke.BrushType = (BrushType)brushType;
       stroke.DisableRotationalOpacity = ReadBoolean();
       stroke.u3 = ReadByte();
@@ -70,7 +67,7 @@ namespace SharpQuill
 
       v.Position = ReadVector3();
       v.Normal = ReadVector3();
-      v.Tangeant = ReadVector3();
+      v.Tangent = ReadVector3();
       v.Color = ReadColor();
       v.Opacity = ReadSingle();
       v.Width = ReadSingle();

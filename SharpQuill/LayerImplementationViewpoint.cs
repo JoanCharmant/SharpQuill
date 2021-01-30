@@ -6,16 +6,19 @@ using System.Threading.Tasks;
 
 namespace SharpQuill
 {
+  /// <summary>
+  /// The type-specific data of a viewpoint layer.
+  /// </summary>
   public class LayerImplementationViewpoint : LayerImplementation
   {
-    public int Version;
-    public Color Color;
-    public Vector4 Sphere;
-    public bool AllowTranslationX;
-    public bool AllowTranslationY;
-    public bool AllowTranslationZ;
-    public bool Exporting;
-    public bool ShowingVolume;
-    public string TypeStr;
+    public int Version { get; set; }
+    public Color Color { get; set; }
+    public Vector4 Sphere { get; set; }
+    public bool AllowTranslationX { get; set; }
+    public bool AllowTranslationY { get; set; }
+    public bool AllowTranslationZ { get; set; }
+    public bool Exporting { get; set; }
+    public bool ShowingVolume { get; set; }
+    public string TypeStr { get; set; }
   }
 }

@@ -9,6 +9,9 @@ using System.Threading.Tasks;
 
 namespace SharpQuill
 {
+  /// <summary>
+  /// A QuillSequenceWriter writes the scene hierarchy and data to a quill project folder.
+  /// </summary>
   public static class QuillSequenceWriter
   {
     public static void Write(Sequence seq, string path)
@@ -23,12 +26,14 @@ namespace SharpQuill
       string paintDataFilename = Path.Combine(path, "Quill.qbin");
       string stateFilename = Path.Combine(path, "State.json");
 
-      // Write the qbin file first to update the layers offsets.
-      FileStream qbinStream = File.Create(paintDataFilename);
-      QBinWriter qbinWriter = new QBinWriter(qbinStream);
-      WriteLastStrokeId(seq, qbinWriter);
-      WriteDrawingData(seq.RootLayer, qbinWriter);
-      qbinStream.Close();
+      // Write the qbin file first to update the data offsets.
+      using (FileStream qbinStream = File.Create(paintDataFilename))
+      {
+        QBinWriter qbinWriter = new QBinWriter(qbinStream);
+        WriteLastStrokeId(seq, qbinWriter);
+        WriteDrawingData(seq.RootLayer, qbinWriter);
+        qbinWriter.Flush();
+      }
 
       WriteManifest(seq, sequenceFilename);
       WriteState(stateFilename);
@@ -42,7 +47,6 @@ namespace SharpQuill
       root.Add(new JProperty("Sequence", WriteSequence(seq)));
       
       // Note: the formatter will fully indent arrays of primitives.
-      // We don't care because it will be saved back to flat arrays when saving from Quill.
       string json = JsonConvert.SerializeObject(root, Formatting.Indented);
       File.WriteAllText(path, json);
     }
@@ -213,11 +217,16 @@ namespace SharpQuill
       return new JArray(value.X, value.Y, value.Z, value.W);
     }
 
+    private static JArray WriteQuaternion(Quaternion value)
+    {
+      return new JArray(value.X, value.Y, value.Z, value.W);
+    }
+
     private static JObject WriteTransform(Transform value)
     {
       JObject jT = new JObject();
 
-      jT.Add(new JProperty("Rotation", WriteVector4(value.Rotation)));
+      jT.Add(new JProperty("Rotation", WriteQuaternion(value.Rotation)));
       jT.Add(new JProperty("Scale", value.Scale));
       jT.Add(new JProperty("Flip", value.Flip));
       jT.Add(new JProperty("Translation", WriteVector3(value.Translation)));
@@ -348,30 +357,32 @@ namespace SharpQuill
     
     private static void WriteState(string path)
     {
-      // We write the state just to be able to read the file in Quill.
+      // We need to write the scene state to be able to read the file in Quill.
       // Use a dummy structure with all default values.
       // Unlike quill default new document, we explicitely not start with any paint layer in move or paint mode.
       
       JObject root = new JObject();
       
       JObject jQuill = new JObject();
-      jQuill.Add(new JProperty("ShowGrid", false));
 
-      JObject jDetailRender = new JObject();
+      JObject jRulers = new JObject();
+      jRulers.Add(new JProperty("ShowGrid", false));
+      jQuill.Add(new JProperty("Rulers", jRulers));
 
       JObject jSurface = new JObject();
       jSurface.Add(new JProperty("Texture", "None"));
       jSurface.Add(new JProperty("Scale", 1.0f));
 
+      JObject jDetailRender = new JObject();
       jDetailRender.Add(new JProperty("Surface", jSurface));
-
       jQuill.Add(new JProperty("DetailRender", jDetailRender));
-      jQuill.Add(new JProperty("ShowViewpoints", true));
+
       jQuill.Add(new JProperty("MoveLayer", ""));
       jQuill.Add(new JProperty("PaintLayer", ""));
-      jQuill.Add(new JProperty("ActiveViewpoint", "ViewPoint_0"));
-      jQuill.Add(new JProperty("SelectedViewpoint", "ViewPoint_0"));
-      jQuill.Add(new JProperty("ToolID", 0));
+      jQuill.Add(new JProperty("CameraLayer", ""));
+      jQuill.Add(new JProperty("DirectManipulation", 0));
+
+      jQuill.Add(new JProperty("ToolName", "Paint"));
 
       JObject jTool = new JObject();
       jTool.Add(new JProperty("BrushID", 3));
@@ -391,7 +402,6 @@ namespace SharpQuill
         jColorPalette.Add(luma);
         jColorPalette.Add(luma);
       }
-
       jQuill.Add(new JProperty("ColorPalette", jColorPalette));
 
       root.Add(new JProperty("Quill", jQuill));

@@ -8,6 +8,6 @@ namespace SharpQuill
 {
   public class Thumbnails
   {
-    public int Picture_3D_Type3;
+    public int Picture_3D_Type3 { get; set; }
   }
 }

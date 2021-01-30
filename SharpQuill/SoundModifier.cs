@@ -8,6 +8,6 @@ namespace SharpQuill
 {
   public class SoundModifier
   {
-    public SoundModifierType Type;
+    public SoundModifierType Type { get; set; }
   }
 }
