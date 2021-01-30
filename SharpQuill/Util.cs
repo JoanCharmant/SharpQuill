@@ -23,6 +23,10 @@ namespace SharpQuill
       seq.Gallery = new Gallery();
       seq.BackgroundColor = new Color(0.8f, 0.8f, 0.8f);
       seq.DefaultViewpoint = "Root/InitialSpawnArea";
+      seq.Framerate = 24;
+      seq.ExportStart = 0;
+      seq.ExportEnd = 126000;
+      seq.CameraResolution = new Size(1920, 1080);
 
       Layer root = CreateDefaultGroup("Root", true);
       Layer spawn = CreateDefaultSpawnArea("InitialSpawnArea");
@@ -92,7 +96,7 @@ namespace SharpQuill
       layer.Animation.Keys = new Keyframes();
       
       LayerImplementationPaint impl = new LayerImplementationPaint();
-      impl.Framerate = 24.0f;
+      impl.Framerate = 24;
       impl.MaxRepeatCount = 0;
       impl.Drawings = new List<Drawing>();
       impl.Frames = new List<int>();

@@ -11,5 +11,7 @@ namespace SharpQuill
     Unknown,
     TwoD,
     TwoDDepth,
+    ThreeSixty_Equirect_Mono,
+    ThreeSixty_Equirect_Stereo,
   }
 }

@@ -57,6 +57,10 @@ namespace SharpQuill
         seq.DefaultViewpoint = s.Sequence.DefaultViewpoint.ToObject(typeof(string));
       else
         seq.DefaultViewpoint = ""; // "Root/InitialSpawnArea"
+      seq.Framerate = s.Sequence.Framerate;
+      seq.ExportStart = s.Sequence.ExportStart;
+      seq.ExportEnd = s.Sequence.ExportEnd;
+      seq.CameraResolution = ParseSize(s.Sequence.CameraResolution);
       seq.RootLayer = ParseLayer(s.Sequence.RootLayer);
       return seq;
     }
@@ -93,6 +97,16 @@ namespace SharpQuill
         throw new InvalidDataException();
 
       return new Color(value);
+    }
+
+    private static Size ParseSize(JArray jValue)
+    {
+      List<int> value = jValue.ToObject<List<int>>();
+
+      if (value.Count != 2)
+        throw new InvalidDataException();
+
+      return new Size(value);
     }
 
     private static Vector3 ParseVector3(JArray jValue)
@@ -300,36 +314,6 @@ namespace SharpQuill
             result = impl;
             break;
         }
-        case LayerType.Picture:
-        {
-            //LayerImplementationPicture impl = new LayerImplementationPicture();
-            
-            //PictureMode mode;
-            //bool parsed = Enum.TryParse((string)li.Mode.ToObject(typeof(string)), out mode);
-            //impl.Mode = parsed ? mode : PictureMode.Unknown;
-
-            //impl.Filename = li.Filename;
-            //result = impl;
-            break;
-        }
-        case LayerType.Sound:
-        {
-            
-            //LayerImplementationSound impl = new LayerImplementationSound();
-
-            //impl.Duration = li.Duration;
-            //impl.Volume = li.Volume;
-            //impl.AttenMode = li.AttenMode;
-            //impl.AttenMin = li.AttenMin;
-            //impl.AttenMax = li.AttenMax;
-            //impl.Loop = li.Loop;
-            //impl.IsSpatialized = li.IsSpatialized;
-            //impl.Play = li.Play;
-            //impl.Filename = li.Filename;
-
-            //result = impl;
-            break;
-        }
         case LayerType.Viewpoint:
         {
             LayerImplementationViewpoint impl = new LayerImplementationViewpoint();
@@ -345,11 +329,6 @@ namespace SharpQuill
             result = impl;
             break;
         }
-        case LayerType.Model:
-        {
-
-            break;
-        }
         case LayerType.Camera:
         {
             LayerImplementationCamera impl = new LayerImplementationCamera();
@@ -357,6 +336,12 @@ namespace SharpQuill
             result = impl;
             break;
         }
+
+        case LayerType.Model:
+        case LayerType.Picture:
+        case LayerType.Sound:
+        default:
+          break;
       }
 
       return result;

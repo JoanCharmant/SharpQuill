@@ -58,6 +58,10 @@ namespace SharpQuill
       jSeq.Add(new JProperty("Gallery", WriteGallery(seq.Gallery)));
       jSeq.Add(new JProperty("BackgroundColor", WriteColor(seq.BackgroundColor)));
       jSeq.Add(new JProperty("DefaultViewpoint", seq.DefaultViewpoint));
+      jSeq.Add(new JProperty("Framerate", seq.Framerate));
+      jSeq.Add(new JProperty("ExportStart", seq.ExportStart));
+      jSeq.Add(new JProperty("ExportEnd", seq.ExportEnd));
+      jSeq.Add(new JProperty("CameraResolution", WriteSize(seq.CameraResolution)));
       jSeq.Add(new JProperty("RootLayer", WriteLayer(seq.RootLayer)));
       return jSeq;
     }
@@ -116,20 +120,19 @@ namespace SharpQuill
       {
         case LayerType.Group:
           return WriteLayerImplementationGroup(impl as LayerImplementationGroup);
+
         case LayerType.Paint:
           return WriteLayerImplementationPaint(impl as LayerImplementationPaint);
-        case LayerType.Picture:
-          return null;
-          //return WriteLayerImplementationPicture(impl as LayerImplementationPicture);
-        case LayerType.Sound:
-          return null;
-          //return WriteLayerImplementationSound(impl as LayerImplementationSound);
+
         case LayerType.Viewpoint:
           return WriteLayerImplementationViewpoint(impl as LayerImplementationViewpoint);
-        case LayerType.Model:
-          return null;
+
         case LayerType.Camera:
           return WriteLayerImplementationCamera(impl as LayerImplementationCamera);
+
+        case LayerType.Model:
+        case LayerType.Sound:
+        case LayerType.Picture:
         default:
           return null;
       }
@@ -206,38 +209,14 @@ namespace SharpQuill
       return jLayer;
     }
 
-    private static JObject WriteLayerImplementationPicture(LayerImplementationPicture impl)
-    {
-      JObject jLayer = new JObject();
-
-      throw new NotImplementedException();
-      //jLayer.Add(new JProperty("Mode", impl.Mode.ToString()));
-      //jLayer.Add(new JProperty("DataFile", impl.Filename));
-
-      return jLayer;
-    }
-    
-    private static JObject WriteLayerImplementationSound(LayerImplementationSound impl)
-    {
-      JObject jLayer = new JObject();
-
-      throw new NotImplementedException();
-      //jLayer.Add(new JProperty("Duration", impl.Duration));
-      //jLayer.Add(new JProperty("Volume", impl.Volume));
-      //jLayer.Add(new JProperty("AttenMode", impl.AttenMode));
-      //jLayer.Add(new JProperty("AttenMin", impl.AttenMin));
-      //jLayer.Add(new JProperty("AttenMax", impl.AttenMax));
-      //jLayer.Add(new JProperty("Loop", impl.Loop));
-      //jLayer.Add(new JProperty("IsSpatialized", impl.IsSpatialized));
-      //jLayer.Add(new JProperty("Play", impl.Play));
-      //jLayer.Add(new JProperty("File", impl.Filename));
-
-      return jLayer;
-    }
-
     private static JArray WriteColor(Color value)
     {
       return new JArray(value.R, value.G, value.B);
+    }
+
+    private static JArray WriteSize(Size value)
+    {
+      return new JArray(value.Width, value.Height);
     }
 
     private static JArray WriteVector3(Vector3 value)

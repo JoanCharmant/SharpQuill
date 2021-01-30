@@ -15,7 +15,7 @@ namespace SharpQuill
     /// <summary>
     /// The framerate for animated layers.
     /// </summary>
-    public float Framerate { get; set; }
+    public int Framerate { get; set; }
 
     /// <summary>
     /// Number of loops of animation. 0 means inifinite loops.

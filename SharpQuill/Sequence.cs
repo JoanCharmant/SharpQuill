@@ -20,6 +20,14 @@ namespace SharpQuill
 
     public string DefaultViewpoint { get; set; }
 
+    public int Framerate { get; set; }
+
+    public int ExportStart { get; set; }
+
+    public int ExportEnd { get; set; }
+
+    public Size CameraResolution { get; set; }
+
     /// <summary>
     /// Root of the hierarchy of layers.
     /// </summary>

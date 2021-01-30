@@ -9,5 +9,6 @@ namespace SharpQuill
   public enum ModelShadingMode
   {
     Unlit,
+    Smooth
   }
 }
