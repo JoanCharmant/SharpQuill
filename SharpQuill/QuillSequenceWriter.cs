@@ -129,10 +129,21 @@ namespace SharpQuill
           //throw new NotImplementedException();
         case LayerType.Model:
           return null;
-          //throw new NotImplementedException();
+        case LayerType.Camera:
+          return WriteLayerImplementationCamera(impl as LayerImplementationCamera);
         default:
           return null;
       }
+    }
+
+    private static bool IsSupported(Layer layer)
+    {
+      if (layer == null)
+        return false;
+
+      return layer.Type == LayerType.Group ||
+             layer.Type == LayerType.Paint ||
+             layer.Type == LayerType.Camera;
     }
 
     private static JObject WriteLayerImplementationGroup(LayerImplementationGroup impl)
@@ -142,7 +153,7 @@ namespace SharpQuill
 
       foreach (Layer child in impl.Children)
       {
-        if (child != null && (child.Type == LayerType.Group || child.Type == LayerType.Paint))
+        if (IsSupported(child))
           jChildren.Add(WriteLayer(child));
       }
 
@@ -170,6 +181,13 @@ namespace SharpQuill
 
       jLayer.Add(new JProperty("Frames", jFrames));
       
+      return jLayer;
+    }
+
+    private static JObject WriteLayerImplementationCamera(LayerImplementationCamera impl)
+    {
+      JObject jLayer = new JObject();
+      jLayer.Add(new JProperty("FOV", impl.FOV));
       return jLayer;
     }
 

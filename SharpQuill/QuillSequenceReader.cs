@@ -301,11 +301,9 @@ namespace SharpQuill
             break;
         }
         case LayerType.Picture:
-          {
+        {
             //LayerImplementationPicture impl = new LayerImplementationPicture();
             
-
-
             //PictureMode mode;
             //bool parsed = Enum.TryParse((string)li.Mode.ToObject(typeof(string)), out mode);
             //impl.Mode = parsed ? mode : PictureMode.Unknown;
@@ -313,12 +311,11 @@ namespace SharpQuill
             //impl.Filename = li.Filename;
             //result = impl;
             break;
-          }
+        }
         case LayerType.Sound:
-          {
+        {
             
             //LayerImplementationSound impl = new LayerImplementationSound();
-
 
             //impl.Duration = li.Duration;
             //impl.Volume = li.Volume;
@@ -332,17 +329,24 @@ namespace SharpQuill
 
             //result = impl;
             break;
-          }
+        }
         case LayerType.Viewpoint:
-          {
+        {
 
             break;
-          }
+        }
         case LayerType.Model:
-          {
+        {
 
             break;
-          }
+        }
+        case LayerType.Camera:
+        {
+            LayerImplementationCamera impl = new LayerImplementationCamera();
+            impl.FOV = li.FOV;
+            result = impl;
+            break;
+        }
       }
 
       return result;

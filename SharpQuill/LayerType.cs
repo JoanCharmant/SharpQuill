@@ -45,5 +45,10 @@ namespace SharpQuill
     /// A model layer contains a mesh.
     /// </summary>
     Model,
+
+    /// <summary>
+    /// A camera layer.
+    /// </summary>
+    Camera,
   }
 }
