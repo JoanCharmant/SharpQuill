@@ -61,7 +61,7 @@ namespace SharpQuill
     public Transform Transform { get; set; } = Transform.Identity;
 
     /// <summary>
-    /// The transform of the pivot for this layer.
+    /// The transform of the pivot for this layer, in layer space.
     /// </summary>
     public Transform Pivot { get; set; } = Transform.Identity;
 

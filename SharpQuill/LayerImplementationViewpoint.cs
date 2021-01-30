@@ -19,6 +19,10 @@ namespace SharpQuill
     public bool AllowTranslationZ { get; set; }
     public bool Exporting { get; set; }
     public bool ShowingVolume { get; set; }
+
+    /// <summary>
+    /// Possible values are "FloorLevel" and "EyeLevel".
+    /// </summary>
     public string TypeStr { get; set; }
   }
 }

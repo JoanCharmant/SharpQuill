@@ -125,8 +125,7 @@ namespace SharpQuill
           return null;
           //return WriteLayerImplementationSound(impl as LayerImplementationSound);
         case LayerType.Viewpoint:
-          return null;
-          //throw new NotImplementedException();
+          return WriteLayerImplementationViewpoint(impl as LayerImplementationViewpoint);
         case LayerType.Model:
           return null;
         case LayerType.Camera:
@@ -143,7 +142,8 @@ namespace SharpQuill
 
       return layer.Type == LayerType.Group ||
              layer.Type == LayerType.Paint ||
-             layer.Type == LayerType.Camera;
+             layer.Type == LayerType.Camera ||
+             layer.Type == LayerType.Viewpoint;
     }
 
     private static JObject WriteLayerImplementationGroup(LayerImplementationGroup impl)
@@ -188,6 +188,21 @@ namespace SharpQuill
     {
       JObject jLayer = new JObject();
       jLayer.Add(new JProperty("FOV", impl.FOV));
+      return jLayer;
+    }
+
+    private static JObject WriteLayerImplementationViewpoint(LayerImplementationViewpoint impl)
+    {
+      JObject jLayer = new JObject();
+      jLayer.Add(new JProperty("Version", impl.Version));
+      jLayer.Add(new JProperty("Color", WriteColor(impl.Color)));
+      jLayer.Add(new JProperty("Sphere", WriteVector4(impl.Sphere)));
+      jLayer.Add(new JProperty("AllowTranslationX", impl.AllowTranslationX));
+      jLayer.Add(new JProperty("AllowTranslationY", impl.AllowTranslationY));
+      jLayer.Add(new JProperty("AllowTranslationZ", impl.AllowTranslationZ));
+      jLayer.Add(new JProperty("Exporting", impl.Exporting));
+      jLayer.Add(new JProperty("ShowingVolume", impl.ShowingVolume));
+      jLayer.Add(new JProperty("TypeStr", impl.TypeStr));
       return jLayer;
     }
 

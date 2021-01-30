@@ -332,7 +332,17 @@ namespace SharpQuill
         }
         case LayerType.Viewpoint:
         {
-
+            LayerImplementationViewpoint impl = new LayerImplementationViewpoint();
+            impl.Version = li.Version;
+            impl.Color = ParseColor(li.Color);
+            impl.Sphere = ParseVector4(li.Sphere);
+            impl.AllowTranslationX = li.AllowTranslationX;
+            impl.AllowTranslationY = li.AllowTranslationY;
+            impl.AllowTranslationZ = li.AllowTranslationZ;
+            impl.Exporting = li.Exporting;
+            impl.ShowingVolume = li.ShowingVolume;
+            impl.TypeStr = li.TypeStr;
+            result = impl;
             break;
         }
         case LayerType.Model:

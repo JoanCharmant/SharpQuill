@@ -9,7 +9,7 @@ namespace SharpQuill
   /// <summary>
   /// The keyframes contain the various channels of animation for each layer.
   /// This is for tweened animation, the frame by frame animation happen in the drawing sequence of the paint layer.
-  /// Times are relative to the parent sequence.
+  /// Times are relative to the parent sequence, they can be negative if the keyframe is before the parent offset.
   /// It is not clear if the visibility and offset keyframes are really animable,
   /// they seem to only be used for offsetting the layer to the right.
   /// In this case the visibility keyframe is true at the start time, with interpolation set to None,
