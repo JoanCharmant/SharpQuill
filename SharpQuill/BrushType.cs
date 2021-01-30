@@ -12,11 +12,10 @@ namespace SharpQuill
   /// </summary>
   public enum BrushType
   {
-    Line, 
-    Ribbon, 
     Cylinder, 
     Ellipse,
+    Ribbon, 
     Cube,
-    Unknown
+    Line, 
   }
 }

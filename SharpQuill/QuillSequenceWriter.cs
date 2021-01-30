@@ -257,7 +257,7 @@ namespace SharpQuill
       jAnimation.Add(new JProperty("StartOffset", value.StartOffset));
       jAnimation.Add(new JProperty("MaxRepeatCount", value.MaxRepeatCount));
 
-      if (value.Keys == null || value.Keys.Visibility.Count == 0)
+      if (value.Keys == null)
       {
         jAnimation.Add(new JProperty("Keys", new JObject()));
       }
@@ -273,41 +273,55 @@ namespace SharpQuill
     {
       JObject jKeyframes = new JObject();
 
+      // Visibility.
       JArray jVisibility = new JArray();
-      foreach (KeyframeBool kf in value.Visibility)
-        jVisibility.Add(WriteKeyframeBool(kf));
-
+      foreach (var kf in value.Visibility)
+      {
+        JObject jK = new JObject();
+        jK.Add(new JProperty("Time", kf.Time));
+        jK.Add(new JProperty("Value", kf.Value));
+        jK.Add(new JProperty("Interpolation", kf.Interpolation.ToString()));
+        jVisibility.Add(jK);
+      }
       jKeyframes.Add(new JProperty("Visibility", jVisibility));
 
+      // Offset.
+      JArray jOffset = new JArray();
+      foreach (var kf in value.Offset)
+      {
+        JObject jK = new JObject();
+        jK.Add(new JProperty("Time", kf.Time));
+        jK.Add(new JProperty("Value", kf.Value));
+        jK.Add(new JProperty("Interpolation", kf.Interpolation.ToString()));
+        jOffset.Add(jK);
+      }
+      jKeyframes.Add(new JProperty("Offset", jOffset));
+
+      // Opacity.
       JArray jOpacity = new JArray();
-      foreach (KeyframeFloat kf in value.Opacity)
-        jOpacity.Add(WriteKeyframeFloat(kf));
-      
+      foreach (var kf in value.Opacity)
+      {
+        JObject jK = new JObject();
+        jK.Add(new JProperty("Time", kf.Time));
+        jK.Add(new JProperty("Value", kf.Value));
+        jK.Add(new JProperty("Interpolation", kf.Interpolation.ToString()));
+        jOpacity.Add(jK);
+      }
       jKeyframes.Add(new JProperty("Opacity", jOpacity));
 
+      // Transform.
+      JArray jTransform = new JArray();
+      foreach (var kf in value.Transform)
+      {
+        JObject jK = new JObject();
+        jK.Add(new JProperty("Time", kf.Time));
+        jK.Add(new JProperty("Value", WriteTransform(kf.Value)));
+        jK.Add(new JProperty("Interpolation", kf.Interpolation.ToString()));
+        jTransform.Add(jK);
+      }
+      jKeyframes.Add(new JProperty("Transform", jTransform));
+
       return jKeyframes;
-    }
-
-    private static JObject WriteKeyframeBool(KeyframeBool value)
-    {
-      JObject jK = new JObject();
-
-      jK.Add(new JProperty("Time", value.Time));
-      jK.Add(new JProperty("Value", value.Value));
-      jK.Add(new JProperty("Interpolation", value.Interpolation.ToString()));
-
-      return jK;
-    }
-
-    private static JObject WriteKeyframeFloat(KeyframeFloat value)
-    {
-      JObject jK = new JObject();
-
-      jK.Add(new JProperty("Time", value.Time));
-      jK.Add(new JProperty("Value", value.Value));
-      jK.Add(new JProperty("Interpolation", value.Interpolation.ToString()));
-
-      return jK;
     }
 
     private static JObject WriteDrawing(Drawing drawing)

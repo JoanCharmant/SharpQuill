@@ -8,8 +8,8 @@ namespace SharpQuill
 {
   public enum PictureType
   {
+    Unknown,
     TwoD,
     TwoDDepth,
-    Unknown
   }
 }

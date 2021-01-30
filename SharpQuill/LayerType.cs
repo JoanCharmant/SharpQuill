@@ -12,6 +12,11 @@ namespace SharpQuill
   public enum LayerType
   {
     /// <summary>
+    /// Unknown layer type.
+    /// </summary>
+    Unknown,
+
+    /// <summary>
     /// A group layer contains other layers.
     /// </summary>
     Group,
@@ -40,10 +45,5 @@ namespace SharpQuill
     /// A model layer contains a mesh.
     /// </summary>
     Model,
-
-    /// <summary>
-    /// Unknown layer type.
-    /// </summary>
-    Unknown
   }
 }

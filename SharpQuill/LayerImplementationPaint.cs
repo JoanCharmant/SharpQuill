@@ -12,10 +12,30 @@ namespace SharpQuill
   /// </summary>
   public class LayerImplementationPaint : LayerImplementation
   {
+    /// <summary>
+    /// The framerate for animated layers.
+    /// </summary>
     public float Framerate { get; set; }
+
+    /// <summary>
+    /// Number of loops of animation. 0 means inifinite loops.
+    /// </summary>
     public int MaxRepeatCount { get; set; }
+
+    /// <summary>
+    /// The list of drawings (keyframes) in this layer.
+    /// Empty keyframes are still drawings.
+    /// Non-keyframes are not drawings.
+    /// Inserted keyframes are appended at the end of the list.
+    /// </summary>
     public List<Drawing> Drawings { get; set; } = new List<Drawing>();
-    public List<float> Frames { get; set; } = new List<float>();
+
+    /// <summary>
+    /// The list of frames in the layer, values are indices into the Drawings list.
+    /// A non-keyframe means an index is repeated.
+    /// The values are not necessarily in order if we have inserted a keyframe in the middle.
+    /// </summary>
+    public List<int> Frames { get; set; } = new List<int>();
 
     /// <summary>
     /// Performs a deep copy of this LayerImplementationPaint.
@@ -27,7 +47,7 @@ namespace SharpQuill
       l.MaxRepeatCount = MaxRepeatCount;
       foreach (Drawing d in Drawings)
         l.Drawings.Add(d.Clone());
-      foreach (float frame in Frames)
+      foreach (int frame in Frames)
         l.Frames.Add(frame);
 
       return l;

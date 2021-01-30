@@ -16,6 +16,7 @@ namespace SharpQuill
     /// The bounding box of the whole drawing.
     /// </summary>
     public BoundingBox BoundingBox { get; set; }
+
     /// <summary>
     /// The original file offset of this drawing in the qbin.
     /// This is only modified on import or export.

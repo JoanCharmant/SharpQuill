@@ -184,48 +184,67 @@ namespace SharpQuill
       return animation;
     }
 
+
+    private static T ParseEnum<T>(dynamic v) where T : struct
+    {
+      Enum.TryParse((string)v.ToObject(typeof(string)), out T result);
+      return result;
+    }
+    
+
     private static Keyframes ParseKeyframes(dynamic kkff)
     {
       Keyframes keyframes = new Keyframes();
 
-      if (kkff == null || kkff.Visibility == null || kkff.Opacity == null)
-        return keyframes;
+      if (kkff.Visibility != null)
+      {
+        foreach (var kf in kkff.Visibility)
+        {
+          Keyframe<bool> keyframe = new Keyframe<bool>();
+          keyframe.Time = kf.Time;
+          keyframe.Value = kf.Value;
+          keyframe.Interpolation = ParseEnum<Interpolation>(kf.Interpolation);
+          keyframes.Visibility.Add(keyframe);
+        }
+      }
 
-      foreach (var kf in kkff.Visibility)
-        keyframes.Visibility.Add(ParseKeyframeBool(kf));
+      if (kkff.Offset != null)
+      {
+        foreach (var kf in kkff.Offset)
+        {
+          Keyframe<int> keyframe = new Keyframe<int>();
+          keyframe.Time = kf.Time;
+          keyframe.Value = kf.Value;
+          keyframe.Interpolation = ParseEnum<Interpolation>(kf.Interpolation);
+          keyframes.Offset.Add(keyframe);
+        }
+      }
 
-      foreach (var kf in kkff.Opacity)
-        keyframes.Opacity.Add(ParseKeyframeFloat(kf));
+      if (kkff.Opacity != null)
+      {
+        foreach (var kf in kkff.Opacity)
+        {
+          Keyframe<float> keyframe = new Keyframe<float>();
+          keyframe.Time = kf.Time;
+          keyframe.Value = kf.Value;
+          keyframe.Interpolation = ParseEnum<Interpolation>(kf.Interpolation);
+          keyframes.Opacity.Add(keyframe);
+        }
+      }
+
+      if (kkff.Transform != null)
+      {
+        foreach (var kf in kkff.Transform)
+        {
+          Keyframe<Transform> keyframe = new Keyframe<Transform>();
+          keyframe.Time = kf.Time;
+          keyframe.Value = ParseTransform(kf.Value);
+          keyframe.Interpolation = ParseEnum<Interpolation>(kf.Interpolation);
+          keyframes.Transform.Add(keyframe);
+        }
+      }
 
       return keyframes;
-    }
-
-    private static KeyframeBool ParseKeyframeBool(dynamic kf)
-    {
-      KeyframeBool keyframe = new KeyframeBool();
-
-      keyframe.Time = kf.Time;
-      keyframe.Value = kf.Value;
-
-      Interpolation interpolation;
-      bool parsed = Enum.TryParse((string)kf.Interpolation.ToObject(typeof(string)), out interpolation);
-      keyframe.Interpolation = parsed ? interpolation : Interpolation.None;
-      
-      return keyframe;
-    }
-
-    private static KeyframeFloat ParseKeyframeFloat(dynamic kf)
-    {
-      KeyframeFloat keyframe = new KeyframeFloat();
-
-      keyframe.Time = kf.Time;
-      keyframe.Value = kf.Value;
-
-      Interpolation interpolation;
-      bool parsed = Enum.TryParse((string)kf.Interpolation.ToObject(typeof(string)), out interpolation);
-      keyframe.Interpolation = parsed ? interpolation : Interpolation.None;
-
-      return keyframe;
     }
 
     private static Layer ParseLayer(dynamic l)
@@ -238,8 +257,7 @@ namespace SharpQuill
       layer.BBoxVisible = l.BBoxVisible;
       layer.Opacity = l.Opacity;
 
-      LayerType layerType;
-      bool parsed = Enum.TryParse((string)l.Type.ToObject(typeof(string)), out layerType);
+      bool parsed = Enum.TryParse((string)l.Type.ToObject(typeof(string)), out LayerType layerType);
       layer.Type = parsed ? layerType : LayerType.Unknown;
 
       layer.IsModelTopLayer = l.IsModelTopLayer;
@@ -277,7 +295,7 @@ namespace SharpQuill
             foreach (var d in li.Drawings)
               impl.Drawings.Add(ParseDrawing(d));
 
-            impl.Frames = li.Frames.ToObject<List<float>>();
+            impl.Frames = li.Frames.ToObject<List<int>>();
             
             result = impl;
             break;

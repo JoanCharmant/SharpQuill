@@ -80,7 +80,7 @@ namespace SharpQuill
       impl.Framerate = 24.0f;
       impl.MaxRepeatCount = 0;
       impl.Drawings = new List<Drawing>();
-      impl.Frames = new List<float>();
+      impl.Frames = new List<int>();
 
       Drawing drawing = new Drawing();
       drawing.Data = new DrawingData();

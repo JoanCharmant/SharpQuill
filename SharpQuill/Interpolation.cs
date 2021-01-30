@@ -9,5 +9,9 @@ namespace SharpQuill
   public enum Interpolation
   {
     None,
+    Linear,
+    EaseIn,
+    EaseOut,
+    Smoothstep,
   }
 }
