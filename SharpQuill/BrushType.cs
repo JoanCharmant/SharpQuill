@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 namespace SharpQuill
 {
   /// <summary>
-  /// Enumerates brush types.
-  /// The "capped" versions of the brushes are made by setting the start and end vertices to zero width.
+  /// Brush types.
+  /// The "capped" versions of the brushes are made by setting the start and end vertices width to zero.
   /// </summary>
   public enum BrushType
   {

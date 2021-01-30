@@ -6,20 +6,24 @@ using System.Threading.Tasks;
 
 namespace SharpQuill
 {
+  /// <summary>
+  /// The keyframes contain the various channels of animation for each layer.
+  /// This is for tweened animation, the frame by frame animation happen in the drawing sequence of the paint layer.
+  /// Times are relative to the parent sequence.
+  /// It is not clear if the visibility and offset keyframes are really animable,
+  /// they seem to only be used for offsetting the layer to the right.
+  /// In this case the visibility keyframe is true at the start time, with interpolation set to None,
+  /// and the offset keyframe is set to 0 at the start time.
+  /// </summary>
   public class Keyframes
   {
     /// <summary>
     /// List of visibility keyframes. Not clear if this is really animable.
-    /// Seemingly only used for offsetting the layer to the right.
-    /// In this case a single keyframe is created for Visibility and Offset,
-    /// the value is set to true at the start time and interpolation set to None,
-    /// and in the offset keyframe the value is set to 0 at the start time.
     /// </summary>
     public List<Keyframe<bool>> Visibility { get; set; } = new List<Keyframe<bool>>();
 
     /// <summary>
     /// List of offset keyframes. Not clear if this is really animable.
-    /// Seemingly only used for offsetting the layer to the right.
     /// </summary>
     public List<Keyframe<int>> Offset { get; set; } = new List<Keyframe<int>>();
 

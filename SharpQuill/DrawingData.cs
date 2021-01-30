@@ -11,7 +11,7 @@ namespace SharpQuill
   /// </summary>
   public class DrawingData
   {
-    public List<Stroke> Strokes = new List<Stroke>();
+    public List<Stroke> Strokes { get; set; } = new List<Stroke>();
 
     /// <summary>
     /// Performs a deep copy of this drawing data.

@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace SharpQuill
 {
+  /// <summary>
+  /// Interpolation modes for transform and opacity keyframes.
+  /// </summary>
   public enum Interpolation
   {
     None,

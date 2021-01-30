@@ -8,6 +8,6 @@ namespace SharpQuill
 {
   public class LayerImplementationGroup : LayerImplementation
   {
-    public List<Layer> Children = new List<Layer>();
+    public List<Layer> Children { get; set; } = new List<Layer>();
   }
 }

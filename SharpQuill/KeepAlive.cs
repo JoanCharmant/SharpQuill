@@ -8,6 +8,6 @@ namespace SharpQuill
 {
   public class KeepAlive
   {
-    public KeepAliveType Type;
+    public KeepAliveType Type { get; set; }
   }
 }

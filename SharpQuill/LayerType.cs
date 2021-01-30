@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace SharpQuill
 {
   /// <summary>
-  /// Enumerates layer types.
+  /// Layer types.
   /// </summary>
   public enum LayerType
   {

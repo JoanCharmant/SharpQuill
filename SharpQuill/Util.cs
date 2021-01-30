@@ -12,6 +12,10 @@ namespace SharpQuill
   /// </summary>
   public static class Util
   {
+
+    /// <summary>
+    /// Creates a simple Quill scene.
+    /// </summary>
     public static Sequence CreateDefaultSequence()
     {
       Sequence seq = new Sequence();
@@ -19,9 +23,9 @@ namespace SharpQuill
       seq.Gallery = new Gallery();
       seq.BackgroundColor = new Color(0.8f, 0.8f, 0.8f);
       seq.DefaultViewpoint = "Root/InitialSpawnArea";
-      Layer root = CreateDefaultGroup("Root");
-      Layer spawn = CreateDefaultSpawnArea("InitialSpawnArea");
 
+      Layer root = CreateDefaultGroup("Root", true);
+      Layer spawn = CreateDefaultSpawnArea("InitialSpawnArea");
       List<Layer> children = ((LayerImplementationGroup)root.Implementation).Children;
       children.Add(spawn);
 
@@ -30,7 +34,10 @@ namespace SharpQuill
       return seq;
     }
 
-    public static Layer CreateDefaultGroup(string name)
+    /// <summary>
+    /// Creates a simple group layer.
+    /// </summary>
+    public static Layer CreateDefaultGroup(string name, bool isSequence = false)
     {
       Layer layer = new Layer();
       layer.Name = name;
@@ -48,6 +55,14 @@ namespace SharpQuill
       layer.Animation = new Animation();
       layer.Animation.Keys = new Keyframes();
 
+      if (isSequence)
+      {
+        layer.Animation.Duration = 45360000;
+        layer.Animation.Timeline = true;
+        layer.Animation.Keys.Visibility.Add(new Keyframe<bool>(0, true, Interpolation.None));
+        layer.Animation.Keys.Offset.Add(new Keyframe<int>(0, 0, Interpolation.None));
+      }
+
       LayerImplementationGroup impl = new LayerImplementationGroup();
       impl.Children = new List<Layer>();
       layer.Implementation = impl;
@@ -56,7 +71,7 @@ namespace SharpQuill
     }
 
     /// <summary>
-    /// Creates a basic paint layer.
+    /// Creates a simple empty paint layer.
     /// </summary>
     public static Layer CreateDefaultPaint(string name = "Paint")
     {
@@ -133,7 +148,7 @@ namespace SharpQuill
     /// The path should not contain the "Root" group, use a single "/" instead or nothing.
     /// For example, to create a layer at Root/Main/Test, call this with path="/Main/Test".
     /// </summary>
-    public static Layer CreateGroupLayer(Sequence seq, string path)
+    public static Layer CreateGroupLayer(Sequence seq, string path, bool isSequence = false)
     {
       Layer parent = seq.RootLayer;
       string[] nodes = path.Split(new string[] { "/", "\\" }, StringSplitOptions.RemoveEmptyEntries);
@@ -144,7 +159,7 @@ namespace SharpQuill
 
         if (child == null || child.Type != LayerType.Group)
         {
-          child = CreateDefaultGroup(nodes[i]);
+          child = CreateDefaultGroup(nodes[i], isSequence);
           ((LayerImplementationGroup)parent.Implementation).Children.Add(child);
         }
 
@@ -164,7 +179,7 @@ namespace SharpQuill
       Layer result = null;
 
       string groupPath = Path.GetDirectoryName(path);
-      Layer layerGroup = CreateGroupLayer(seq, groupPath);
+      Layer layerGroup = CreateGroupLayer(seq, groupPath, false);
 
       // At this point we have found or created the insertion point.
       // Double check that the paint layer itself doesn't already exist.
@@ -197,7 +212,7 @@ namespace SharpQuill
     /// <param name="layer">The layer to add to the group.</param>
     public static void Add(Sequence seq, string path, Layer layer)
     {
-      Layer layerGroup = CreateGroupLayer(seq, path);
+      Layer layerGroup = CreateGroupLayer(seq, path, false);
       List<Layer> children = ((LayerImplementationGroup)layerGroup.Implementation).Children;
       children.Add(layer);
     }

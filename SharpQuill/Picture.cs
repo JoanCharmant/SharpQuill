@@ -9,8 +9,8 @@ namespace SharpQuill
   // Used for the Gallery.
   public class Picture
   {
-    public PictureType Type;
-    public long DataFileOffset;
-    public PictureMetadata Metadata;
+    public PictureType Type { get; set; }
+    public long DataFileOffset { get; set; }
+    public PictureMetadata Metadata { get; set; }
   }
 }

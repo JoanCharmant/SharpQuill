@@ -8,7 +8,7 @@ namespace SharpQuill
 {
   public class PictureMetadata
   {
-    public float VerticalFOV;
-    public float HorizontalFOV;
+    public float VerticalFOV { get; set; }
+    public float HorizontalFOV { get; set; }
   }
 }

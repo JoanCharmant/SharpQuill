@@ -8,7 +8,7 @@ namespace SharpQuill
 {
   public class Gallery
   {
-    public Thumbnails Thumbnails;
-    public List<Picture> Pictures = new List<Picture>();
+    public Thumbnails Thumbnails { get; set; }
+    public List<Picture> Pictures { get; set; } = new List<Picture>();
   }
 }

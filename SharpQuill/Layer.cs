@@ -16,15 +16,18 @@ namespace SharpQuill
     /// The name of the layer.
     /// </summary>
     public string Name { get; set; }
+
     /// <summary>
     /// Whether the layer is visible.
     /// </summary>
     public bool Visible { get; set; }
+
     /// <summary>
     /// Whether the layer is locked.
     /// Locked layers cannot be modfied or expanded.
     /// </summary>
     public bool Locked { get; set; }
+
     /// <summary>
     /// Whether the layer is collapsed.
     /// </summary>
@@ -39,14 +42,17 @@ namespace SharpQuill
     /// Layer-specific opacity level.
     /// </summary>
     public float Opacity { get; set; }
+
     /// <summary>
     /// The type of the layer.
     /// </summary>
     public LayerType Type { get; set; }
+
     /// <summary>
     /// Whether this layer is the root of a model hierarchy.
     /// </summary>
     public bool IsModelTopLayer { get; set; }
+
     public KeepAlive KeepAlive { get; set; }
 
     /// <summary>
@@ -59,6 +65,9 @@ namespace SharpQuill
     /// </summary>
     public Transform Pivot { get; set; } = Transform.Identity;
 
+    /// <summary>
+    /// The animation channels for this layer (for interpolated animation).
+    /// </summary>
     public Animation Animation { get; set; }
 
     /// <summary>
