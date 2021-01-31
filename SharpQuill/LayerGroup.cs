@@ -6,7 +6,10 @@ using System.Threading.Tasks;
 
 namespace SharpQuill
 {
-  // A group layer contains other layers.
+  /// <summary>
+  /// The type-specific data of a group layer.
+  /// A group layer contains other layers.
+  /// </summary>
   public class LayerGroup : Layer
   {
     public override LayerType Type { get { return LayerType.Group; } }

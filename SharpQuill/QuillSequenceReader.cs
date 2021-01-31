@@ -10,12 +10,12 @@ using System.Threading.Tasks;
 
 namespace SharpQuill
 {
-  /// <summary>
-  /// A QuillSequenceReader reads a quill project folder and imports it in a Sequence object.
-  /// A project consists in a json-based scene hierarchy, a json-based state file, and binary data.
-  /// </summary>
   public static class QuillSequenceReader
   {
+    /// <summary>
+    /// Reads a Quill project folder and imports it in a Sequence object.
+    /// A project consists in a json-based scene hierarchy, a json-based state file, and binary data.
+    /// </summary>
     public static Sequence Read(string path)
     {
       if (string.IsNullOrEmpty(path) || !Directory.Exists(path))
@@ -201,9 +201,9 @@ namespace SharpQuill
       }
       else if (t is JArray)
       {
-        // Old transform format from Quill 1.3. Raw 4x4 matrix.
-        // FIXME: parse and convert the matrix to TRS.
-        //List<float> matrix = t.ToObject<List<float>>();
+        // Old transform format from Quill 1.3 (raw 4x4 matrix).
+        // We do not support this format.
+        // To migrate the project to the new format open it in Quill and save it back.
         return Transform.Identity;
       }
       else
