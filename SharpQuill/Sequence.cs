@@ -118,7 +118,7 @@ namespace SharpQuill
     /// </summary>
     /// <param name="child">The layer to add to the group layer.</param>
     /// <param name="path">The path to the group layer.</param>
-    public void InsertChildAt(Layer child, string path)
+    public void InsertLayerAt(Layer child, string path)
     {
       LayerGroup group = CreateGroupLayerAt(path, false);
       if (group != null)
