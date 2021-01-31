@@ -111,14 +111,14 @@ namespace SharpQuill
     }
 
     /// <summary>
-    /// Adds an existing layer to a group, creating all the groups along the way if necessary.
+    /// Inserts an existing layer to a group, creating all the groups along the way if necessary.
     /// The parent group is identified by its path.
     /// The path must not contain the name of the leaf layer.
     /// For example, to insert a paint layer under Root/MyGroup, call this with path="/MyGroup".
     /// </summary>
     /// <param name="child">The layer to add to the group layer.</param>
     /// <param name="path">The path to the group layer.</param>
-    public void AddChildAt(Layer child, string path)
+    public void InsertChildAt(Layer child, string path)
     {
       LayerGroup group = CreateGroupLayerAt(path, false);
       if (group != null)

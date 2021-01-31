@@ -40,7 +40,7 @@ Import a folder and print some top level info.
 Drill down the layer tree and print out paint layer statistics.
 
 ```csharp
-    // Visits the layer tree and prints out the total number of strokes and vertices of each paint layer.
+    // Visits the tree and prints the total number of strokes and vertices of each paint layer.
     private void VisitLayers(Layer layer)
     {
       if (layer is LayerGroup)
