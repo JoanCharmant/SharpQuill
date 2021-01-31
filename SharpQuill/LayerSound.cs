@@ -19,5 +19,14 @@ namespace SharpQuill
     public bool Loop { get; set; }
     public SoundAttenuation Attenuation { get; set; }
     public List<SoundModifier> Modifiers { get; set; } = new List<SoundModifier>();
-  }
+
+    /// <summary>
+    /// Constructs a new sound layer.
+    /// </summary>
+    /// <param name="name">The name of the layer.</param>
+    public LayerSound(string name = "")
+    {
+      this.Name = name;
+    }
+}
 }

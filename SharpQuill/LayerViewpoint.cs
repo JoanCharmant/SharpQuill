@@ -25,5 +25,36 @@ namespace SharpQuill
     /// The type of viewpoint. Possible values are "FloorLevel" and "EyeLevel".
     /// </summary>
     public string TypeStr { get; set; } = "FloorLevel";
+
+    /// <summary>
+    /// Constructs a new viewpoint layer.
+    /// </summary>
+    /// <param name="name">The name of the layer.</param>
+    public LayerViewpoint(string name = "")
+    {
+      this.Name = name;
+    }
+
+    /// <summary>
+    /// Creates the default viewpoint layer used in the default sequence.
+    /// </summary>
+    public static LayerViewpoint CreateDefault()
+    {
+      LayerViewpoint layer = new LayerViewpoint("InitialSpawnArea");
+
+      layer.Visible = false;
+
+      layer.Version = 1;
+      layer.Color = new Color(0.113542f, 0.409455f, 0.808914f);
+      layer.Sphere = new Vector4(0, 1, 0, 2);
+      layer.AllowTranslationX = true;
+      layer.AllowTranslationY = true;
+      layer.AllowTranslationZ = true;
+      layer.Exporting = true;
+      layer.ShowingVolume = false;
+      layer.TypeStr = "FloorLevel";
+
+      return layer;
+    }
   }
 }

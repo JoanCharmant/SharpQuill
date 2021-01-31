@@ -17,5 +17,14 @@ namespace SharpQuill
     public string ImportFilePath { get; set; }
     public ModelShadingMode ShadingModel { get; set; }
     public bool RenderWireFrame { get; set; }
-  }
+
+    /// <summary>
+    /// Constructs a new model layer.
+    /// </summary>
+    /// <param name="name">The name of the layer.</param>
+    public LayerModel(string name = "")
+    {
+      this.Name = name;
+    }
+}
 }

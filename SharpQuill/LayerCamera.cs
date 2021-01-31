@@ -16,6 +16,15 @@ namespace SharpQuill
     /// <summary>
     /// Field of view of the camera.
     /// </summary>
-    public float FOV { get; set; }
+    public float FOV { get; set; } = 19;
+
+    /// <summary>
+    /// Constructs a new camera layer.
+    /// </summary>
+    /// <param name="name">The name of the layer.</param>
+    public LayerCamera(string name = "")
+    {
+      this.Name = name;
+    }
   }
 }

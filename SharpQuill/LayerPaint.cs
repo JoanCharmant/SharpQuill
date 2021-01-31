@@ -38,5 +38,21 @@ namespace SharpQuill
     /// The values are not necessarily in order if we have inserted a keyframe in the middle.
     /// </summary>
     public List<int> Frames { get; set; } = new List<int>();
+
+    /// <summary>
+    /// Constructs a new paint layer.
+    /// </summary>
+    /// <param name="name">The name of the layer.</param>
+    /// <param name="addDrawing">Whether a drawing is immediately added to the layer. All paint layers need to have at least one drawing.</param>
+    public LayerPaint(string name = "", bool addDrawing = false)
+    {
+      this.Name = name;
+
+      if (addDrawing)
+      {
+        Drawings.Add(new Drawing());
+        Frames.Add(0);
+      }
+    }
   }
 }

@@ -31,8 +31,20 @@ namespace SharpQuill
     /// <summary>
     /// Root of the hierarchy of layers.
     /// </summary>
-    public Layer RootLayer { get; set; }
+    public LayerGroup RootLayer { get; set; }
 
     public UInt32 LastStrokeId { get; set; }
+
+    /// <summary>
+    /// Creates a default sequence with a spawn area.
+    /// This does not add any paint layer.
+    /// </summary>
+    public static Sequence CreateDefault()
+    {
+      Sequence seq = new Sequence();
+      seq.RootLayer = LayerGroup.CreateDefault();
+      seq.RootLayer.Children.Add(LayerViewpoint.CreateDefault());
+      return seq;
+    }
   }
 }
