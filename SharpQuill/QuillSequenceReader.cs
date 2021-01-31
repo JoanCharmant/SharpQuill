@@ -18,23 +18,34 @@ namespace SharpQuill
   {
     public static Sequence Read(string path)
     {
-      if (string.IsNullOrEmpty(path))
-        return null;
-
-      if (!Directory.Exists(path))
+      if (string.IsNullOrEmpty(path) || !Directory.Exists(path))
         return null;
 
       string sequenceFilename = Path.Combine(path, "Quill.json");
-      if (!File.Exists(sequenceFilename))
-        return null;
-
       string paintDataFilename = Path.Combine(path, "Quill.qbin");
-      if (!File.Exists(paintDataFilename))
+      if (!File.Exists(sequenceFilename) || !File.Exists(paintDataFilename))
         return null;
 
-      string json = File.ReadAllText(sequenceFilename);
-      dynamic document = JsonConvert.DeserializeObject(json);
-      Sequence seq = Parse(document);
+      Sequence seq = null;
+      try
+      {
+        string json = File.ReadAllText(sequenceFilename);
+        dynamic document = JsonConvert.DeserializeObject(json);
+        seq = Parse(document);
+      }
+      catch(JsonReaderException e)
+      {
+        // The JSON is invalid.
+        // This happened sometimes in the early days of Quill when the transforms exploded and "inf" or "nan" was written in the matrix array.
+        Console.WriteLine("JSON parsing error: {0}", e.Message);
+      }
+      catch(Exception e)
+      {
+        Console.WriteLine("Error during the parsing of the Quill.json document: {0}", e.Message);
+      }
+
+      if (seq == null)
+        return null;
 
       // Now that we have loaded the scene hierarchy, read the actual attached data from the qbin.
       using (Stream stream = File.OpenRead(paintDataFilename))
@@ -50,6 +61,9 @@ namespace SharpQuill
     private static Sequence Parse(dynamic s)
     {
       Sequence seq = new Sequence();
+      if (s == null || s.Sequence == null)
+        return seq;
+
       seq.Metadata = ParseMetadata(s.Sequence.Metadata);
       seq.Gallery = ParseGallery(s.Sequence.Gallery);
       seq.BackgroundColor = ParseColor(s.Sequence.BackgroundColor);
@@ -57,17 +71,22 @@ namespace SharpQuill
         seq.DefaultViewpoint = s.Sequence.DefaultViewpoint.ToObject(typeof(string));
       else
         seq.DefaultViewpoint = ""; // "Root/InitialSpawnArea"
-      seq.Framerate = s.Sequence.Framerate;
-      seq.ExportStart = s.Sequence.ExportStart;
-      seq.ExportEnd = s.Sequence.ExportEnd;
-      seq.CameraResolution = ParseSize(s.Sequence.CameraResolution);
+
+      seq.Framerate = ParseInt(s.Sequence.Framerate, seq.Framerate);
+      seq.ExportStart = ParseInt(s.Sequence.ExportStart, seq.ExportStart);
+      seq.ExportEnd = ParseInt(s.Sequence.ExportEnd, seq.ExportEnd);
+      seq.CameraResolution = ParseSize(s.Sequence.CameraResolution, seq.CameraResolution);
       seq.RootLayer = ParseLayer(s.Sequence.RootLayer);
+
+      seq.RootLayer.Animation.Timeline = true;
       return seq;
     }
 
     private static Metadata ParseMetadata(dynamic m)
     {
       Metadata metadata = new Metadata();
+      if (m == null)
+        return metadata;
 
       metadata.Title = m.Title.ToObject(typeof(string));
       metadata.Description = m.Description.ToObject(typeof(string));
@@ -80,7 +99,9 @@ namespace SharpQuill
     private static Gallery ParseGallery(dynamic g)
     {
       Gallery gallery = new Gallery();
-      
+      if (g == null)
+        return gallery;
+
       // TODO.
       // ParseThumbnails: object.
       // ParsePictures: list.
@@ -89,84 +110,131 @@ namespace SharpQuill
       return gallery;
     }
 
-    private static Color ParseColor(JArray jValue)
+    private static int ParseInt(dynamic v, int def = 0)
     {
-      List<float> value = jValue.ToObject<List<float>>();
+      return v ?? def;
+    }
 
+    private static float ParseFloat(dynamic v, float def = 0)
+    {
+      return v ?? def;
+    }
+
+    private static bool ParseBool(dynamic v, bool def = false)
+    {
+      return v ?? def;
+    }
+
+    private static Color ParseColor(JArray jValue, Color def = new Color())
+    {
+      if (jValue == null)
+        return def;
+
+      List<float> value = jValue.ToObject<List<float>>();
       if (value.Count != 3)
-        throw new InvalidDataException();
+        return def;
 
       return new Color(value);
     }
 
-    private static Size ParseSize(JArray jValue)
+    private static Size ParseSize(JArray jValue, Size def = new Size())
     {
-      List<int> value = jValue.ToObject<List<int>>();
+      if (jValue == null)
+        return def;
 
+      List<int> value = jValue.ToObject<List<int>>();
       if (value.Count != 2)
-        throw new InvalidDataException();
+        return def;
 
       return new Size(value);
     }
 
     private static Vector3 ParseVector3(JArray jValue)
     {
-      List<float> value = jValue.ToObject<List<float>>();
+      if (jValue == null)
+        return new Vector3();
 
+      List<float> value = jValue.ToObject<List<float>>();
       if (value.Count != 3)
-        throw new InvalidDataException();
+        return new Vector3();
 
       return new Vector3(value);
     }
 
     private static Vector4 ParseVector4(JArray jValue)
     {
-      List<float> value = jValue.ToObject<List<float>>();
+      if (jValue == null)
+        return new Vector4();
 
+      List<float> value = jValue.ToObject<List<float>>();
       if (value.Count != 4)
-        throw new InvalidDataException();
+        return new Vector4();
 
       return new Vector4(value);
     }
 
     private static Quaternion ParseQuaternion(JArray jValue)
     {
-      List<float> value = jValue.ToObject<List<float>>();
+      if (jValue == null)
+        return Quaternion.Identity;
 
+      List<float> value = jValue.ToObject<List<float>>();
       if (value.Count != 4)
-        throw new InvalidDataException();
+        return Quaternion.Identity;
 
       return new Quaternion(value);
     }
 
     private static Transform ParseTransform(dynamic t)
     {
-      Transform transform = Transform.Identity;
+      if (t == null)
+        return Transform.Identity;
 
-      transform.Rotation = ParseQuaternion(t.Rotation);
-      transform.Scale = t.Scale;
-      transform.Flip = t.Flip;
-      transform.Translation = ParseVector3(t.Translation);
-      
-      return transform;
+      if (t is JObject)
+      {
+        Transform transform = Transform.Identity;
+        transform.Rotation = ParseQuaternion(t.Rotation);
+        transform.Scale = ParseFloat(t.Scale, 1.0f);
+        transform.Flip = t.Flip;
+        transform.Translation = ParseVector3(t.Translation);
+        return transform;
+      }
+      else if (t is JArray)
+      {
+        // Old transform format from Quill 1.3. Raw 4x4 matrix.
+        // FIXME: parse and convert the matrix to TRS.
+        //List<float> matrix = t.ToObject<List<float>>();
+        return Transform.Identity;
+      }
+      else
+      {
+        return Transform.Identity;
+      }
     }
 
     private static BoundingBox ParseBoundingBox(JArray jValue)
     {
-      List<float> value = jValue.ToObject<List<float>>();
+      if (jValue == null)
+        return new BoundingBox();
 
+      List<float> value = jValue.ToObject<List<float>>();
       if (value.Count != 6)
-        throw new InvalidDataException();
+        return new BoundingBox();
 
       return new BoundingBox(value);
     }
 
     /// <summary>
-    /// Parse the drawing metadata. The actual strokes will be read from the qbin later.
+    /// Parse the drawing metadata.
+    /// The actual strokes will be read from the qbin later.
     /// </summary>
     private static Drawing ParseDrawing(dynamic d)
     {
       Drawing drawing = new Drawing();
+
+      if (d == null)
+        return drawing;
+
       drawing.BoundingBox = ParseBoundingBox(d.BoundingBox);
 
       long offset;
@@ -179,6 +247,9 @@ namespace SharpQuill
     private static KeepAlive ParseKeepAlive(dynamic ka)
     {
       KeepAlive keepAlive = new KeepAlive();
+      if (ka == null)
+        return keepAlive;
+
       keepAlive.Type = ParseEnum<KeepAliveType>(ka.Type);
       return keepAlive;
     }
@@ -186,12 +257,13 @@ namespace SharpQuill
     private static Animation ParseAnimation(dynamic a)
     {
       Animation animation = new Animation();
+      if (a == null)
+        return animation;
 
-      animation.Duration = a.Duration;
-      animation.Timeline = a.Timeline;
-      animation.StartOffset = a.StartOffset;
-      animation.MaxRepeatCount = a.MaxRepeatCount;
-
+      animation.Duration = ParseFloat(a.Duration);
+      animation.Timeline = ParseBool(a.Timeline);
+      animation.StartOffset = ParseFloat(a.StartOffset);
+      animation.MaxRepeatCount = ParseFloat(a.MaxRepeatCount);
       animation.Keys = ParseKeyframes(a.Keys);
       
       return animation;
@@ -212,9 +284,12 @@ namespace SharpQuill
     private static Keyframes ParseKeyframes(dynamic kkff)
     {
       Keyframes keyframes = new Keyframes();
+      if (kkff == null)
+        return keyframes;
 
       if (kkff.Visibility != null)
       {
+        keyframes.Visibility.Clear();
         foreach (var kf in kkff.Visibility)
         {
           Keyframe<bool> keyframe = new Keyframe<bool>();
@@ -227,6 +302,7 @@ namespace SharpQuill
 
       if (kkff.Offset != null)
       {
+        keyframes.Offset.Clear();
         foreach (var kf in kkff.Offset)
         {
           Keyframe<int> keyframe = new Keyframe<int>();
@@ -239,6 +315,7 @@ namespace SharpQuill
 
       if (kkff.Opacity != null)
       {
+        keyframes.Opacity.Clear();
         foreach (var kf in kkff.Opacity)
         {
           Keyframe<float> keyframe = new Keyframe<float>();
@@ -251,6 +328,7 @@ namespace SharpQuill
 
       if (kkff.Transform != null)
       {
+        keyframes.Transform.Clear();
         foreach (var kf in kkff.Transform)
         {
           Keyframe<Transform> keyframe = new Keyframe<Transform>();
@@ -293,8 +371,10 @@ namespace SharpQuill
           {
             layer = new LayerPaint();
             LayerPaint lp = layer as LayerPaint;
-            lp.Framerate = l.Implementation.Framerate;
-            lp.MaxRepeatCount = l.Implementation.MaxRepeatCount;
+
+            lp.Framerate = ParseInt(l.Implementation.Framerate, lp.Framerate);
+            lp.MaxRepeatCount = ParseInt(l.Implementation.MaxRepeatCount, lp.MaxRepeatCount);
+
             if (l.Implementation.Drawings != null && l.Implementation.Frames != null)
             {
               foreach (var d in l.Implementation.Drawings)
@@ -303,10 +383,19 @@ namespace SharpQuill
                 if (drawing != null)
                   lp.Drawings.Add(drawing);
               }
-
               lp.Frames = l.Implementation.Frames.ToObject<List<int>>();
             }
-
+            else if (l.Implementation.BoundingBox != null && l.Implementation.DataFileOffset != null)
+            {
+              // Old format from Quill 1.3, circa 2017, before animations.
+              Drawing drawing = new Drawing();
+              drawing.BoundingBox = ParseBoundingBox(l.Implementation.BoundingBox);
+              long offset;
+              bool parsed = long.TryParse((string)l.Implementation.DataFileOffset.ToObject(typeof(string)), NumberStyles.HexNumber, CultureInfo.InvariantCulture, out offset);
+              drawing.DataFileOffset = parsed ? offset : -1;
+              lp.Drawings.Add(drawing);
+              lp.Frames.Add(0);
+            }
             break;
           }
         case LayerType.Viewpoint:
@@ -352,12 +441,12 @@ namespace SharpQuill
     private static void ParseLayerCommon(Layer layer, dynamic l)
     {
       layer.Name = l.Name;
-      layer.Visible = l.Visible;
-      layer.Locked = l.Locked;
-      layer.Collapsed = l.Collapsed;
-      layer.BBoxVisible = l.BBoxVisible;
-      layer.Opacity = l.Opacity;
-      layer.IsModelTopLayer = l.IsModelTopLayer;
+      layer.Visible = ParseBool(l.Visible, layer.Visible);
+      layer.Locked = ParseBool(l.Locked, layer.Locked);
+      layer.Collapsed = ParseBool(l.Collapsed, layer.Collapsed);
+      layer.BBoxVisible = ParseBool(l.BBoxVisible, layer.BBoxVisible);
+      layer.Opacity = ParseFloat(l.Opacity, layer.Opacity);
+      layer.IsModelTopLayer = ParseBool(l.IsModelTopLayer, layer.IsModelTopLayer);
       layer.KeepAlive = ParseKeepAlive(l.KeepAlive);
       layer.Transform = ParseTransform(l.Transform);
       layer.Pivot = ParseTransform(l.Pivot);

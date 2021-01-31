@@ -16,6 +16,10 @@ namespace SharpQuill
     public float Z;
     public float W;
 
+    private static Quaternion identity = new Quaternion(0, 0, 0, 1);
+    public static Quaternion Identity { get { return identity; } }
+
+
     public Quaternion(float x, float y, float z, float w)
     {
       X = x;
