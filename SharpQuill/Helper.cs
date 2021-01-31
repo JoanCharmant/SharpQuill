@@ -40,8 +40,6 @@ namespace SharpQuill
       {
         layer.Animation.Duration = 45360000;
         layer.Animation.Timeline = true;
-        layer.Animation.Keys.Visibility.Add(new Keyframe<bool>(0, true, Interpolation.None));
-        layer.Animation.Keys.Offset.Add(new Keyframe<int>(0, 0, Interpolation.None));
       }
 
       return layer;

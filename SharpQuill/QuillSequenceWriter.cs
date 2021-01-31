@@ -311,28 +311,34 @@ namespace SharpQuill
       jKeyframes.Add(new JProperty("Offset", jOffset));
 
       // Opacity.
-      JArray jOpacity = new JArray();
-      foreach (var kf in value.Opacity)
+      if (value.Opacity.Count > 0)
       {
-        JObject jK = new JObject();
-        jK.Add(new JProperty("Time", kf.Time));
-        jK.Add(new JProperty("Value", kf.Value));
-        jK.Add(new JProperty("Interpolation", kf.Interpolation.ToString()));
-        jOpacity.Add(jK);
+        JArray jOpacity = new JArray();
+        foreach (var kf in value.Opacity)
+        {
+          JObject jK = new JObject();
+          jK.Add(new JProperty("Time", kf.Time));
+          jK.Add(new JProperty("Value", kf.Value));
+          jK.Add(new JProperty("Interpolation", kf.Interpolation.ToString()));
+          jOpacity.Add(jK);
+        }
+        jKeyframes.Add(new JProperty("Opacity", jOpacity));
       }
-      jKeyframes.Add(new JProperty("Opacity", jOpacity));
 
       // Transform.
-      JArray jTransform = new JArray();
-      foreach (var kf in value.Transform)
+      if (value.Transform.Count > 0)
       {
-        JObject jK = new JObject();
-        jK.Add(new JProperty("Time", kf.Time));
-        jK.Add(new JProperty("Value", WriteTransform(kf.Value)));
-        jK.Add(new JProperty("Interpolation", kf.Interpolation.ToString()));
-        jTransform.Add(jK);
+        JArray jTransform = new JArray();
+        foreach (var kf in value.Transform)
+        {
+          JObject jK = new JObject();
+          jK.Add(new JProperty("Time", kf.Time));
+          jK.Add(new JProperty("Value", WriteTransform(kf.Value)));
+          jK.Add(new JProperty("Interpolation", kf.Interpolation.ToString()));
+          jTransform.Add(jK);
+        }
+        jKeyframes.Add(new JProperty("Transform", jTransform));
       }
-      jKeyframes.Add(new JProperty("Transform", jTransform));
 
       return jKeyframes;
     }

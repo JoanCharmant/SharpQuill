@@ -37,5 +37,11 @@ namespace SharpQuill
     /// </summary>
     public List<Keyframe<Transform>> Transform { get; set; } = new List<Keyframe<Transform>>();
 
+    public Keyframes()
+    {
+      // The minimal working file requires a visibility and offset keyframes.
+      Visibility.Add(new Keyframe<bool>(0, true, Interpolation.None));
+      Offset.Add(new Keyframe<int>(0, 0, Interpolation.None));
+    }
   }
 }
