@@ -23,7 +23,9 @@ namespace SharpQuill
     /// This value is only relevant for group layers.
     /// </summary>
     public bool Timeline { get; set; }
+
     public float StartOffset { get; set; }
+
     public float MaxRepeatCount { get; set; }
 
     /// <summary>

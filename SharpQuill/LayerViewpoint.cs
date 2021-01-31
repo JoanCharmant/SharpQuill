@@ -9,8 +9,9 @@ namespace SharpQuill
   /// <summary>
   /// The type-specific data of a viewpoint layer.
   /// </summary>
-  public class LayerImplementationViewpoint : LayerImplementation
+  public class LayerViewpoint : Layer
   {
+    public override LayerType Type { get { return LayerType.Viewpoint; } }
     public int Version { get; set; }
     public Color Color { get; set; }
     public Vector4 Sphere { get; set; }
@@ -21,8 +22,8 @@ namespace SharpQuill
     public bool ShowingVolume { get; set; }
 
     /// <summary>
-    /// Possible values are "FloorLevel" and "EyeLevel".
+    /// The type of viewpoint. Possible values are "FloorLevel" and "EyeLevel".
     /// </summary>
-    public string TypeStr { get; set; }
+    public string TypeStr { get; set; } = "FloorLevel";
   }
 }

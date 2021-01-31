@@ -8,19 +8,21 @@ namespace SharpQuill
 {
   /// <summary>
   /// The type-specific data of a paint layer.
-  /// A paint layer contains drawings and keyframes.
+  /// A paint layer contains drawings on keyframes.
   /// </summary>
-  public class LayerImplementationPaint : LayerImplementation
+  public class LayerPaint : Layer
   {
+    public override LayerType Type { get { return LayerType.Paint; } }
+
     /// <summary>
     /// The framerate for animated layers.
     /// </summary>
-    public int Framerate { get; set; }
+    public int Framerate { get; set; } = 24;
 
     /// <summary>
     /// Number of loops of animation. 0 means inifinite loops.
     /// </summary>
-    public int MaxRepeatCount { get; set; }
+    public int MaxRepeatCount { get; set; } = 0;
 
     /// <summary>
     /// The list of drawings (keyframes) in this layer.
@@ -36,21 +38,5 @@ namespace SharpQuill
     /// The values are not necessarily in order if we have inserted a keyframe in the middle.
     /// </summary>
     public List<int> Frames { get; set; } = new List<int>();
-
-    /// <summary>
-    /// Performs a deep copy of this LayerImplementationPaint.
-    /// </summary>
-    public LayerImplementationPaint Clone()
-    {
-      LayerImplementationPaint l = new LayerImplementationPaint();
-      l.Framerate = Framerate;
-      l.MaxRepeatCount = MaxRepeatCount;
-      foreach (Drawing d in Drawings)
-        l.Drawings.Add(d.Clone());
-      foreach (int frame in Frames)
-        l.Frames.Add(frame);
-
-      return l;
-    }
   }
 }

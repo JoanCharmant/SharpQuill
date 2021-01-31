@@ -7,10 +7,9 @@ using System.Threading.Tasks;
 namespace SharpQuill
 {
   /// <summary>
-  /// A generic layer.
-  /// The data is contained in type specific implementation.
+  /// Layer data that is common to all layer types.
   /// </summary>
-  public class Layer
+  public abstract class Layer
   {
     /// <summary>
     /// The name of the layer.
@@ -20,40 +19,40 @@ namespace SharpQuill
     /// <summary>
     /// Whether the layer is visible.
     /// </summary>
-    public bool Visible { get; set; }
+    public bool Visible { get; set; } = true;
 
     /// <summary>
     /// Whether the layer is locked.
     /// Locked layers cannot be modfied or expanded.
     /// </summary>
-    public bool Locked { get; set; }
+    public bool Locked { get; set; } = false;
 
     /// <summary>
     /// Whether the layer is collapsed.
     /// </summary>
-    public bool Collapsed { get; set; }
+    public bool Collapsed { get; set; } = false;
 
     /// <summary>
     /// Whether the bounding box of the layer is visible.
     /// </summary>
-    public bool BBoxVisible { get; set; }
+    public bool BBoxVisible { get; set; } = false;
 
     /// <summary>
     /// Layer-specific opacity level.
     /// </summary>
-    public float Opacity { get; set; }
+    public float Opacity { get; set; } = 1.0f;
 
     /// <summary>
     /// The type of the layer.
     /// </summary>
-    public LayerType Type { get; set; }
+    public abstract LayerType Type { get; }
 
     /// <summary>
     /// Whether this layer is the root of a model hierarchy.
     /// </summary>
-    public bool IsModelTopLayer { get; set; }
+    public bool IsModelTopLayer { get; set; } = false;
 
-    public KeepAlive KeepAlive { get; set; }
+    public KeepAlive KeepAlive { get; set; } = new KeepAlive();
 
     /// <summary>
     /// The local coordinate system in relation to the parent layer.
@@ -68,11 +67,6 @@ namespace SharpQuill
     /// <summary>
     /// The animation channels for this layer (for interpolated animation).
     /// </summary>
-    public Animation Animation { get; set; }
-
-    /// <summary>
-    /// The type-specific data for this layer.
-    /// </summary>
-    public LayerImplementation Implementation { get; set; }
+    public Animation Animation { get; set; } = new Animation();
   }
 }

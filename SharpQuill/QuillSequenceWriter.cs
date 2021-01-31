@@ -110,29 +110,30 @@ namespace SharpQuill
       jLayer.Add(new JProperty("Transform", WriteTransform(layer.Transform)));
       jLayer.Add(new JProperty("Pivot", WriteTransform(layer.Pivot)));
       jLayer.Add(new JProperty("Animation", WriteAnimation(layer.Animation)));
-      jLayer.Add(new JProperty("Implementation", WriteLayerImplementation(layer.Implementation, layer.Type)));
+      jLayer.Add(new JProperty("Implementation", WriteLayerImplementation(layer)));
       return jLayer;
     }
 
-    private static JObject WriteLayerImplementation(LayerImplementation impl, LayerType type)
+    private static JObject WriteLayerImplementation(Layer layer)
     {
-      switch (type)
+      switch (layer.Type)
       {
         case LayerType.Group:
-          return WriteLayerImplementationGroup(impl as LayerImplementationGroup);
+          return WriteLayerImplementationGroup(layer as LayerGroup);
 
         case LayerType.Paint:
-          return WriteLayerImplementationPaint(impl as LayerImplementationPaint);
+          return WriteLayerImplementationPaint(layer as LayerPaint);
 
         case LayerType.Viewpoint:
-          return WriteLayerImplementationViewpoint(impl as LayerImplementationViewpoint);
+          return WriteLayerImplementationViewpoint(layer as LayerViewpoint);
 
         case LayerType.Camera:
-          return WriteLayerImplementationCamera(impl as LayerImplementationCamera);
+          return WriteLayerImplementationCamera(layer as LayerCamera);
 
         case LayerType.Model:
         case LayerType.Sound:
         case LayerType.Picture:
+        case LayerType.Unknown:
         default:
           return null;
       }
@@ -149,12 +150,12 @@ namespace SharpQuill
              layer.Type == LayerType.Viewpoint;
     }
 
-    private static JObject WriteLayerImplementationGroup(LayerImplementationGroup impl)
+    private static JObject WriteLayerImplementationGroup(LayerGroup layer)
     {
       JObject jLayer = new JObject();
       JArray jChildren = new JArray();
 
-      foreach (Layer child in impl.Children)
+      foreach (Layer child in layer.Children)
       {
         if (IsSupported(child))
           jChildren.Add(WriteLayer(child));
@@ -165,21 +166,21 @@ namespace SharpQuill
       return jLayer;
     }
 
-    private static JObject WriteLayerImplementationPaint(LayerImplementationPaint impl)
+    private static JObject WriteLayerImplementationPaint(LayerPaint layer)
     {
       JObject jLayer = new JObject();
 
-      jLayer.Add(new JProperty("Framerate", impl.Framerate));
-      jLayer.Add(new JProperty("MaxRepeatCount", impl.MaxRepeatCount));
+      jLayer.Add(new JProperty("Framerate", layer.Framerate));
+      jLayer.Add(new JProperty("MaxRepeatCount", layer.MaxRepeatCount));
 
       JArray jDrawings = new JArray();
-      foreach (Drawing drawing in impl.Drawings)
+      foreach (Drawing drawing in layer.Drawings)
         jDrawings.Add(WriteDrawing(drawing));
 
       jLayer.Add(new JProperty("Drawings", jDrawings));
 
       JArray jFrames = new JArray();
-      foreach (float frame in impl.Frames)
+      foreach (float frame in layer.Frames)
         jFrames.Add(frame);
 
       jLayer.Add(new JProperty("Frames", jFrames));
@@ -187,25 +188,25 @@ namespace SharpQuill
       return jLayer;
     }
 
-    private static JObject WriteLayerImplementationCamera(LayerImplementationCamera impl)
+    private static JObject WriteLayerImplementationCamera(LayerCamera layer)
     {
       JObject jLayer = new JObject();
-      jLayer.Add(new JProperty("FOV", impl.FOV));
+      jLayer.Add(new JProperty("FOV", layer.FOV));
       return jLayer;
     }
 
-    private static JObject WriteLayerImplementationViewpoint(LayerImplementationViewpoint impl)
+    private static JObject WriteLayerImplementationViewpoint(LayerViewpoint layer)
     {
       JObject jLayer = new JObject();
-      jLayer.Add(new JProperty("Version", impl.Version));
-      jLayer.Add(new JProperty("Color", WriteColor(impl.Color)));
-      jLayer.Add(new JProperty("Sphere", WriteVector4(impl.Sphere)));
-      jLayer.Add(new JProperty("AllowTranslationX", impl.AllowTranslationX));
-      jLayer.Add(new JProperty("AllowTranslationY", impl.AllowTranslationY));
-      jLayer.Add(new JProperty("AllowTranslationZ", impl.AllowTranslationZ));
-      jLayer.Add(new JProperty("Exporting", impl.Exporting));
-      jLayer.Add(new JProperty("ShowingVolume", impl.ShowingVolume));
-      jLayer.Add(new JProperty("TypeStr", impl.TypeStr));
+      jLayer.Add(new JProperty("Version", layer.Version));
+      jLayer.Add(new JProperty("Color", WriteColor(layer.Color)));
+      jLayer.Add(new JProperty("Sphere", WriteVector4(layer.Sphere)));
+      jLayer.Add(new JProperty("AllowTranslationX", layer.AllowTranslationX));
+      jLayer.Add(new JProperty("AllowTranslationY", layer.AllowTranslationY));
+      jLayer.Add(new JProperty("AllowTranslationZ", layer.AllowTranslationZ));
+      jLayer.Add(new JProperty("Exporting", layer.Exporting));
+      jLayer.Add(new JProperty("ShowingVolume", layer.ShowingVolume));
+      jLayer.Add(new JProperty("TypeStr", layer.TypeStr));
       return jLayer;
     }
 
@@ -363,7 +364,7 @@ namespace SharpQuill
     {
       if (layer.Type == LayerType.Group)
       {
-        foreach (Layer l in ((LayerImplementationGroup)layer.Implementation).Children)
+        foreach (Layer l in ((LayerGroup)layer).Children)
         {
           if (l != null)
             WriteDrawingData(l, qbinWriter);
@@ -371,9 +372,7 @@ namespace SharpQuill
       }
       else if (layer.Type == LayerType.Paint)
       {
-        LayerImplementationPaint lip = layer.Implementation as LayerImplementationPaint;
-
-        foreach (Drawing drawing in lip.Drawings)
+        foreach (Drawing drawing in ((LayerPaint)layer).Drawings)
         {
           drawing.DataFileOffset = qbinWriter.BaseStream.Position;
           qbinWriter.Write(drawing.Data);

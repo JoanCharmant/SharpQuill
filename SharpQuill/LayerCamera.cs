@@ -9,8 +9,10 @@ namespace SharpQuill
   /// <summary>
   /// The type-specific data of a camera layer.
   /// </summary>
-  public class LayerImplementationCamera : LayerImplementation
+  public class LayerCamera : Layer
   {
+    public override LayerType Type { get { return LayerType.Camera; } }
+
     /// <summary>
     /// Field of view of the camera.
     /// </summary>

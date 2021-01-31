@@ -36,7 +36,7 @@ namespace SharpQuill
       dynamic document = JsonConvert.DeserializeObject(json);
       Sequence seq = Parse(document);
 
-      // Now that we have loaded the entire hierarchy, read the actual attached data from the qbin.
+      // Now that we have loaded the scene hierarchy, read the actual attached data from the qbin.
       using (Stream stream = File.OpenRead(paintDataFilename))
       {
         QBinReader qbinReader = new QBinReader(stream);
@@ -161,6 +161,9 @@ namespace SharpQuill
       return new BoundingBox(value);
     }
 
+    /// <summary>
+    /// Parse the drawing metadata. The actual strokes will be read from the qbin later.
+    /// </summary>
     private static Drawing ParseDrawing(dynamic d)
     {
       Drawing drawing = new Drawing();
@@ -194,14 +197,18 @@ namespace SharpQuill
       return animation;
     }
 
-
+    /// <summary>
+    /// Parse one enum. If not found this will return the default value.
+    /// </summary>
     private static T ParseEnum<T>(dynamic v) where T : struct
     {
       Enum.TryParse((string)v.ToObject(typeof(string)), out T result);
       return result;
     }
     
-
+    /// <summary>
+    /// Parse all the keyframe channels data.
+    /// </summary>
     private static Keyframes ParseKeyframes(dynamic kkff)
     {
       Keyframes keyframes = new Keyframes();
@@ -257,87 +264,104 @@ namespace SharpQuill
       return keyframes;
     }
 
+    /// <summary>
+    /// Parse one layer. Drill down recursively for groups.
+    /// </summary>
     private static Layer ParseLayer(dynamic l)
     {
-      Layer layer = new Layer();
+      if (l == null)
+        return null;
+
+      Layer layer;
+      LayerType type = ParseEnum<LayerType>(l.Type);
+      switch (type)
+      {
+        case LayerType.Group:
+          {
+            layer = new LayerGroup();
+            LayerGroup lg = layer as LayerGroup;
+            foreach (var c in l.Implementation.Children)
+            {
+              Layer child = ParseLayer(c);
+              if (child != null)
+                lg.Children.Add(child);
+            }
+
+            break;
+          }
+        case LayerType.Paint:
+          {
+            layer = new LayerPaint();
+            LayerPaint lp = layer as LayerPaint;
+            lp.Framerate = l.Implementation.Framerate;
+            lp.MaxRepeatCount = l.Implementation.MaxRepeatCount;
+            if (l.Implementation.Drawings != null && l.Implementation.Frames != null)
+            {
+              foreach (var d in l.Implementation.Drawings)
+              {
+                Drawing drawing = ParseDrawing(d);
+                if (drawing != null)
+                  lp.Drawings.Add(drawing);
+              }
+
+              lp.Frames = l.Implementation.Frames.ToObject<List<int>>();
+            }
+
+            break;
+          }
+        case LayerType.Viewpoint:
+          {
+            layer = new LayerViewpoint();
+            LayerViewpoint lv = layer as LayerViewpoint;
+            lv.Version = l.Implementation.Version;
+            lv.Color = ParseColor(l.Implementation.Color);
+            lv.Sphere = ParseVector4(l.Implementation.Sphere);
+            lv.AllowTranslationX = l.Implementation.AllowTranslationX;
+            lv.AllowTranslationY = l.Implementation.AllowTranslationY;
+            lv.AllowTranslationZ = l.Implementation.AllowTranslationZ;
+            lv.Exporting = l.Implementation.Exporting;
+            lv.ShowingVolume = l.Implementation.ShowingVolume;
+            lv.TypeStr = l.Implementation.TypeStr;
+            break;
+          }
+        case LayerType.Camera:
+          {
+            layer = new LayerCamera();
+            LayerCamera lc = layer as LayerCamera;
+            lc.FOV = l.Implementation.FOV;
+            break;
+          }
+        case LayerType.Model:
+        case LayerType.Picture:
+        case LayerType.Sound:
+        case LayerType.Unknown:
+        default:
+          layer = null;
+          break;
+      }
+
+      if (layer != null)
+        ParseLayerCommon(layer, l);
+
+      return layer;
+    }
+
+    /// <summary>
+    /// Parse the common part of the layer info.
+    /// </summary>
+    private static void ParseLayerCommon(Layer layer, dynamic l)
+    {
       layer.Name = l.Name;
       layer.Visible = l.Visible;
       layer.Locked = l.Locked;
       layer.Collapsed = l.Collapsed;
       layer.BBoxVisible = l.BBoxVisible;
       layer.Opacity = l.Opacity;
-      layer.Type = ParseEnum<LayerType>(l.Type);
       layer.IsModelTopLayer = l.IsModelTopLayer;
       layer.KeepAlive = ParseKeepAlive(l.KeepAlive);
       layer.Transform = ParseTransform(l.Transform);
       layer.Pivot = ParseTransform(l.Pivot);
       layer.Animation = ParseAnimation(l.Animation);
-      
-      layer.Implementation = ParseLayerImplementation(l.Implementation, layer.Type);
-      return layer;
-    }
-
-    private static LayerImplementation ParseLayerImplementation(dynamic li, LayerType type)
-    {
-      LayerImplementation result = null;
-
-      switch (type)
-      {
-        case LayerType.Group:
-        {
-            LayerImplementationGroup impl = new LayerImplementationGroup();
-            foreach (var c in li.Children)
-              impl.Children.Add(ParseLayer(c));
-
-            result = impl;
-            break;
-        }
-        case LayerType.Paint:
-        {
-            LayerImplementationPaint impl = new LayerImplementationPaint();
-
-            impl.Framerate = li.Framerate;
-            impl.MaxRepeatCount = li.MaxRepeatCount;
-
-            foreach (var d in li.Drawings)
-              impl.Drawings.Add(ParseDrawing(d));
-
-            impl.Frames = li.Frames.ToObject<List<int>>();
-            
-            result = impl;
-            break;
-        }
-        case LayerType.Viewpoint:
-        {
-            LayerImplementationViewpoint impl = new LayerImplementationViewpoint();
-            impl.Version = li.Version;
-            impl.Color = ParseColor(li.Color);
-            impl.Sphere = ParseVector4(li.Sphere);
-            impl.AllowTranslationX = li.AllowTranslationX;
-            impl.AllowTranslationY = li.AllowTranslationY;
-            impl.AllowTranslationZ = li.AllowTranslationZ;
-            impl.Exporting = li.Exporting;
-            impl.ShowingVolume = li.ShowingVolume;
-            impl.TypeStr = li.TypeStr;
-            result = impl;
-            break;
-        }
-        case LayerType.Camera:
-        {
-            LayerImplementationCamera impl = new LayerImplementationCamera();
-            impl.FOV = li.FOV;
-            result = impl;
-            break;
-        }
-
-        case LayerType.Model:
-        case LayerType.Picture:
-        case LayerType.Sound:
-        default:
-          break;
-      }
-
-      return result;
     }
 
     /// <summary>
@@ -347,13 +371,12 @@ namespace SharpQuill
     {
       if (layer.Type == LayerType.Group)
       {
-        foreach (Layer l in ((LayerImplementationGroup)layer.Implementation).Children)
+        foreach (Layer l in ((LayerGroup)layer).Children)
           ReadLayerData(l, qbinReader);
       }
       else if (layer.Type == LayerType.Paint)
       {
-        LayerImplementationPaint lip = layer.Implementation as LayerImplementationPaint;
-        foreach (Drawing drawing in lip.Drawings)
+        foreach (Drawing drawing in ((LayerPaint)layer).Drawings)
         {
           qbinReader.BaseStream.Seek(drawing.DataFileOffset, SeekOrigin.Begin);
           drawing.Data = qbinReader.ReadDrawingData();

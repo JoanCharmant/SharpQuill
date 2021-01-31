@@ -12,21 +12,21 @@ namespace SharpQuill
   public class Sequence
   {
 
-    public Metadata Metadata { get; set; }
+    public Metadata Metadata { get; set; } = new Metadata();
 
-    public Gallery Gallery { get; set; }
+    public Gallery Gallery { get; set; } = new Gallery();
 
-    public Color BackgroundColor { get; set; }
+    public Color BackgroundColor { get; set; } = new Color(0.8f, 0.8f, 0.8f);
 
     public string DefaultViewpoint { get; set; }
 
-    public int Framerate { get; set; }
+    public int Framerate { get; set; } = 24;
 
-    public int ExportStart { get; set; }
+    public int ExportStart { get; set; } = 0;
 
-    public int ExportEnd { get; set; }
+    public int ExportEnd { get; set; } = 126000;
 
-    public Size CameraResolution { get; set; }
+    public Size CameraResolution { get; set; } = new Size(1920, 1080);
 
     /// <summary>
     /// Root of the hierarchy of layers.

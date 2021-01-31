@@ -6,8 +6,11 @@ using System.Threading.Tasks;
 
 namespace SharpQuill
 {
-  public class LayerImplementationGroup : LayerImplementation
+  // A group layer contains other layers.
+  public class LayerGroup : Layer
   {
+    public override LayerType Type { get { return LayerType.Group; } }
+
     public List<Layer> Children { get; set; } = new List<Layer>();
   }
 }

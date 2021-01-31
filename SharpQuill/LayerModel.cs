@@ -6,8 +6,13 @@ using System.Threading.Tasks;
 
 namespace SharpQuill
 {
-  public class LayerImplementationModel
+  /// <summary>
+  /// Model layers wrap a mesh.
+  /// </summary>
+  public class LayerModel : Layer
   {
+    public override LayerType Type { get { return LayerType.Model; } }
+
     public long DataFileOffset { get; set; }
     public string ImportFilePath { get; set; }
     public ModelShadingMode ShadingModel { get; set; }

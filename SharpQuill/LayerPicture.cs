@@ -9,9 +9,11 @@ namespace SharpQuill
   /// <summary>
   /// The type-specific data of a picture layer.
   /// </summary>
-  public class LayerImplementationPicture : LayerImplementation
+  public class LayerPicture : Layer
   {
-    public PictureType Type { get; set; }
+    public override LayerType Type { get { return LayerType.Picture; } }
+
+    public PictureType PictureType { get; set; }
     public bool ViewerLocked { get; set; }
     public long DataFileOffset { get; set; }
     public string ImportFilePath { get; set; }
