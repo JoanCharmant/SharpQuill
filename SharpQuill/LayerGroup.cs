@@ -40,5 +40,48 @@ namespace SharpQuill
     {
       return new LayerGroup("Root", true);
     }
+
+    /// <summary>
+    /// Finds a layer at the specified path. Does not create the groups along the way if not found.
+    /// </summary>
+    public Layer FindLayer(string path)
+    {
+      string[] nodes = path.Split(new string[] { "/", "\\" }, StringSplitOptions.RemoveEmptyEntries);
+
+      LayerGroup parent = this;
+      Layer layer = parent;
+      for (int i = 0; i < nodes.Length; i++)
+      {
+        if (parent == null)
+          return null;
+
+        Layer child = parent.FindChild(nodes[i]);
+        if (child == null)
+          return null;
+
+        if (i == nodes.Length - 1)
+          return child;
+        else
+          parent = child as LayerGroup;
+      }
+
+      return layer;
+    }
+
+    /// <summary>
+    /// Finds an immediate child layer matching the name.
+    /// </summary>
+    public Layer FindChild(string name)
+    {
+      foreach (Layer child in Children)
+      {
+        if (child.Name != name)
+          continue;
+
+        return child;
+      }
+
+      return null;
+    }
   }
 }
